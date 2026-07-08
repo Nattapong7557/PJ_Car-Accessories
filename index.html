@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AutoParts Pro - ร้านอุปกรณ์แต่งรถเก๋งออนไลน์ครบวงจร ล้อแม็ก บอดี้คิท สปอยเลอร์ ท่อไอเสีย ช่วงล่าง และอื่นๆ อีกมากมาย">
+  <meta name="keywords" content="อุปกรณ์แต่งรถ, ล้อแม็ก, บอดี้คิท, สปอยเลอร์, ท่อไอเสีย, แต่งรถเก๋ง, car accessories">
+  <title>AutoParts Pro - อุปกรณ์แต่งรถเก๋งคุณภาพสูง</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div class="loading-overlay" id="loading">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">AUTOPARTS PRO</div>
+  </div>
+
+  <!-- ============================================
+       HEADER
+       ============================================ -->
+  <header class="header" id="header">
+    <div class="container">
+      <div class="header__top">
+        <!-- Logo -->
+        <a href="index.html" class="header__logo" id="logo-link">
+          <img src="assets/images/logo.png" alt="AutoParts Pro Logo">
+          <div class="header__logo-text">
+            <span class="header__logo-name">AutoParts</span>
+            <span class="header__logo-slogan">Pro Performance</span>
+          </div>
+        </a>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="header__menu-toggle" id="menu-toggle" aria-label="เปิดเมนู">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"/>
+          </svg>
+        </button>
+
+        <!-- Search Bar -->
+        <div class="header__search">
+          <form class="header__search-form" id="search-form">
+            <input type="text" class="header__search-input" id="search-input" placeholder="ค้นหาอุปกรณ์แต่งรถ..." aria-label="ค้นหาสินค้า">
+            <button type="submit" class="header__search-btn" id="search-btn" aria-label="ค้นหา">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="header__actions">
+          <button class="header__action" id="login-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>ลงชื่อเข้าใช้</span>
+          </button>
+          
+          <a href="pages/cart.html" class="header__action" id="cart-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="cart-count">(0)</span>
+            <span class="header__action-badge" style="display: none;">0</span>
+          </a>
+          
+          <button class="header__action" id="track-btn" onclick="showNotification('กรุณาลงชื่อเข้าใช้เพื่อติดตามสถานะ')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span>ติดตามสถานะ</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="header__nav" id="main-nav" aria-label="เมนูหลัก">
+        <ul class="header__nav-list">
+          <li class="header__nav-item">
+            <a href="#" class="header__nav-link active" id="nav-promo" data-category="promotion">สินค้าโปรโมชั่น</a>
+          </li>
+          <li class="header__nav-item">
+            <a href="#" class="header__nav-link" id="nav-new" data-category="new">สินค้าใหม่</a>
+          </li>
+          <li class="header__nav-item">
+            <a href="#" class="header__nav-link" id="nav-bestseller" data-category="bestseller">สินค้าขายดี</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============================================
+       MAIN CONTENT
+       ============================================ -->
+  <main>
+    <!-- Hero Banner / Carousel -->
+    <section class="hero" id="hero-section" aria-label="โปรโมชั่นเด่น">
+      <div class="hero__carousel">
+        <div class="hero__slides" id="hero-slides">
+          <!-- Slide 1 -->
+          <div class="hero__slide">
+            <div class="hero__slide-inner">
+              <div class="hero__slide-side">
+                <img src="assets/images/banners/banner_promo.png" alt="โปรโมชั่นล้อ Flowforming ราคา 28,000 บาท">
+              </div>
+              <div class="hero__slide-main">
+                <img src="assets/images/banners/banner_main.png" alt="ADRO x EVENTURI ชุดแต่ง BMW M340i">
+              </div>
+              <div class="hero__slide-side">
+                <img src="assets/images/banners/banner_autosal.png" alt="Bangkok International Auto Salon">
+              </div>
+            </div>
+          </div>
+          <!-- Slide 2 -->
+          <div class="hero__slide">
+            <div class="hero__slide-inner">
+              <div class="hero__slide-side">
+                <img src="assets/images/banners/banner_autosal.png" alt="Bangkok International Auto Salon">
+              </div>
+              <div class="hero__slide-main">
+                <img src="assets/images/banners/banner_promo.png" alt="โปรโมชั่นล้อ Flowforming">
+              </div>
+              <div class="hero__slide-side">
+                <img src="assets/images/banners/banner_main.png" alt="ชุดแต่ง BMW">
+              </div>
+            </div>
+          </div>
+          <!-- Slide 3 -->
+          <div class="hero__slide">
+            <div class="hero__slide-inner">
+              <div class="hero__slide-side">
+                <img src="assets/images/banners/banner_main.png" alt="ชุดแต่ง ADRO">
+              </div>
+              <div class="hero__slide-main">
+                <img src="assets/images/banners/banner_autosal.png" alt="Auto Salon Event">
+              </div>
+              <div class="hero__slide-side">
+                <img src="assets/images/banners/banner_promo.png" alt="โปรโมชั่นพิเศษ">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel Controls -->
+        <button class="hero__control hero__control--prev" id="carousel-prev" aria-label="สไลด์ก่อนหน้า">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <button class="hero__control hero__control--next" id="carousel-next" aria-label="สไลด์ถัดไป">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Carousel Dots -->
+      <div class="hero__dots" id="carousel-dots">
+        <button class="hero__dot active" aria-label="สไลด์ 1"></button>
+        <button class="hero__dot" aria-label="สไลด์ 2"></button>
+        <button class="hero__dot" aria-label="สไลด์ 3"></button>
+      </div>
+    </section>
+
+    <!-- Category Filter Tabs -->
+    <section class="categories" id="categories-section">
+      <div class="container">
+        <div class="categories__tabs" id="category-tabs">
+          <button class="categories__tab active" data-category="all" id="tab-all">สินค้าทั้งหมด</button>
+          <button class="categories__tab" data-category="promotion" id="tab-promo">โปรโมชั่น</button>
+          <button class="categories__tab" data-category="new" id="tab-new">สินค้าใหม่</button>
+          <button class="categories__tab" data-category="bestseller" id="tab-best">ขายดี</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="products" id="products-section" aria-label="รายการสินค้า">
+      <div class="container">
+        <h1 class="products__section-title" id="products-title">สินค้าแนะนำ</h1>
+        <div class="products__grid" id="products-grid">
+          <!-- Products rendered by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Promo Banners -->
+    <section class="promo-banner" id="promo-section">
+      <div class="container">
+        <div class="promo-banner__grid">
+          <div class="promo-banner__item" id="promo-banner-1">
+            <img src="assets/images/banners/banner_promo.png" alt="โปรโมชั่นล้อ Flowforming">
+            <div class="promo-banner__overlay">
+              <h2 class="promo-banner__title">ล้อ Flowforming</h2>
+              <p class="promo-banner__text">เริ่มต้นเพียง ฿28,000 ลดสูงสุด 20%</p>
+            </div>
+          </div>
+          <div class="promo-banner__item" id="promo-banner-2">
+            <img src="assets/images/banners/banner_autosal.png" alt="Auto Salon Event">
+            <div class="promo-banner__overlay">
+              <h2 class="promo-banner__title">Bangkok Auto Salon</h2>
+              <p class="promo-banner__text">สินค้าพิเศษจากงาน Motor Show</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features-section">
+      <div class="container">
+        <div class="features__grid">
+          <div class="feature" id="feature-shipping">
+            <div class="feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="3" width="15" height="13"/>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/>
+                <circle cx="18.5" cy="18.5" r="2.5"/>
+              </svg>
+            </div>
+            <div class="feature__text">
+              <h4>จัดส่งฟรีทั่วประเทศ</h4>
+              <p>สั่งซื้อขั้นต่ำ ฿2,000</p>
+            </div>
+          </div>
+          <div class="feature" id="feature-warranty">
+            <div class="feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div class="feature__text">
+              <h4>รับประกัน 1 ปี</h4>
+              <p>สินค้าทุกชิ้นมีประกัน</p>
+            </div>
+          </div>
+          <div class="feature" id="feature-return">
+            <div class="feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="1 4 1 10 7 10"/>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+              </svg>
+            </div>
+            <div class="feature__text">
+              <h4>คืนสินค้าได้ 7 วัน</h4>
+              <p>ไม่พอใจยินดีคืนเงิน</p>
+            </div>
+          </div>
+          <div class="feature" id="feature-support">
+            <div class="feature__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <div class="feature__text">
+              <h4>บริการ 24/7</h4>
+              <p>ทีมงานพร้อมให้คำปรึกษา</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="footer" id="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <div class="footer__brand-logo">
+            <img src="assets/images/logo.png" alt="AutoParts Pro">
+            <span class="footer__brand-name">AutoParts Pro</span>
+          </div>
+          <p class="footer__brand-desc">
+            ร้านอุปกรณ์แต่งรถเก๋งออนไลน์ครบวงจร<br>
+            จำหน่ายสินค้าคุณภาพสูงจากแบรนด์ชั้นนำ<br>
+            พร้อมบริการติดตั้งและจัดส่งทั่วประเทศ
+          </p>
+          <div class="footer__social">
+            <a href="#" class="footer__social-link" aria-label="Facebook" id="social-fb">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="#" class="footer__social-link" aria-label="Instagram" id="social-ig">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="#" class="footer__social-link" aria-label="LINE" id="social-line">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.82 2 10.5c0 2.95 1.91 5.56 4.88 7.24-.17.61-.62 2.28-.71 2.62-.12.45.16.44.34.32.14-.1 2.19-1.47 3.08-2.07.46.07.93.11 1.41.11 5.52 0 10-3.82 10-8.5S17.52 2 12 2z"/></svg>
+            </a>
+            <a href="#" class="footer__social-link" aria-label="YouTube" id="social-yt">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43zM9.75 15.02V8.48l5.75 3.27-5.75 3.27z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer__column">
+          <h3>หมวดหมู่สินค้า</h3>
+          <ul>
+            <li><a href="#">ล้อแม็ก & ยาง</a></li>
+            <li><a href="#">บอดี้คิท & ชุดแต่ง</a></li>
+            <li><a href="#">ท่อไอเสีย</a></li>
+            <li><a href="#">ช่วงล่าง</a></li>
+            <li><a href="#">ไฟหน้า & ไฟท้าย</a></li>
+            <li><a href="#">ภายในห้องโดยสาร</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__column">
+          <h3>บริการลูกค้า</h3>
+          <ul>
+            <li><a href="#">วิธีการสั่งซื้อ</a></li>
+            <li><a href="#">การชำระเงิน</a></li>
+            <li><a href="#">การจัดส่ง</a></li>
+            <li><a href="#">นโยบายการคืนสินค้า</a></li>
+            <li><a href="#">คำถามที่พบบ่อย</a></li>
+            <li><a href="#">ติดต่อเรา</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__column">
+          <h3>ติดต่อเรา</h3>
+          <ul>
+            <li><a href="#">📍 123 ถ.วิภาวดีรังสิต แขวงลาดยาว กรุงเทพฯ</a></li>
+            <li><a href="tel:021234567">📞 02-123-4567</a></li>
+            <li><a href="mailto:info@autopartspro.th">✉️ info@autopartspro.th</a></li>
+            <li><a href="#">🕐 เปิดทุกวัน 9:00 - 21:00</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p class="footer__copyright">© 2026 AutoParts Pro. สงวนลิขสิทธิ์ทุกประการ</p>
+        <div class="footer__payments">
+          <div class="footer__payment-icon">VISA</div>
+          <div class="footer__payment-icon">MC</div>
+          <div class="footer__payment-icon">PP</div>
+          <div class="footer__payment-icon">COD</div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Login Modal -->
+  <div class="modal" id="login-modal">
+    <div class="modal__backdrop"></div>
+    <div class="modal__content">
+      <button class="modal__close" aria-label="ปิด">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+      <h2 class="modal__title">เข้าสู่ระบบ</h2>
+      <form class="login-form" id="login-form">
+        <div class="login-form__group">
+          <label class="login-form__label" for="email">อีเมล</label>
+          <input type="email" class="login-form__input" id="email" placeholder="example@email.com" required>
+        </div>
+        <div class="login-form__group">
+          <label class="login-form__label" for="password">รหัสผ่าน</label>
+          <input type="password" class="login-form__input" id="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="login-form__submit" id="login-submit">เข้าสู่ระบบ</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="back-to-top" aria-label="กลับไปด้านบน">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M18 15l-6-6-6 6"/>
+    </svg>
+  </button>
+
+  <!-- JavaScript -->
+  <script src="js/app.js"></script>
+</body>
+</html>
