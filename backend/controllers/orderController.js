@@ -116,7 +116,7 @@ const getMyOrders = async (req, res, next) => {
 // @access  Private
 const getOrderById = async (req, res, next) => {
   try {
-    const order = await Order.findById(req.params.id).populate('items.product', 'name image price');
+    const order = await Order.findById(req.params.id);
 
     if (!order) {
       return res.status(404).json({
@@ -189,11 +189,7 @@ const getAllOrders = async (req, res, next) => {
     const skip = (pageNum - 1) * limitNum;
 
     const [orders, total] = await Promise.all([
-      Order.find(query)
-        .populate('user', 'name email')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limitNum),
+      Order.find(query).sort({ createdAt: -1 }).skip(skip).limit(limitNum),
       Order.countDocuments(query)
     ]);
 

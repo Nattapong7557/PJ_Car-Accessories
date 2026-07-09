@@ -1,6 +1,12 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+const sanitizeUser = (user) => {
+  if (!user) return user;
+  const { password, _originalPassword, ...safeUser } = user;
+  return safeUser;
+};
+
 // สร้าง JWT Token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -120,7 +126,7 @@ const getMe = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: user
+      data: sanitizeUser(user)
     });
   } catch (error) {
     next(error);
@@ -142,7 +148,7 @@ const updateProfile = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: user,
+      data: sanitizeUser(user),
       message: 'อัปเดตข้อมูลสำเร็จ'
     });
   } catch (error) {
@@ -157,7 +163,7 @@ const changePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
-    const user = await User.findById(req.user._id).select('+password');
+    const user = await User.findOne({ email: req.user.email }).select('+password');
 
     // ตรวจสอบรหัสผ่านเก่า
     const isMatch = await user.comparePassword(currentPassword);

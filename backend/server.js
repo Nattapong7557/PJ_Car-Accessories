@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const dotenv = require('dotenv');
-const connectDB = require('./config/db');
+const { connectDB } = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
 // Load env variables
@@ -73,7 +73,6 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    // Connect to MongoDB
     await connectDB();
 
     app.listen(PORT, () => {

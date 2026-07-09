@@ -185,9 +185,17 @@
       return parseInt(params.get('id'));
     }
 
-    function loadProduct() {
+    async function loadProduct() {
       const id = getProductIdFromURL();
-      currentProduct = products.find(p => p.id === id);
+
+      try {
+        const response = await fetch(`/api/products/${id}`);
+        const result = await response.json();
+        currentProduct = result && result.success && result.data ? result.data : null;
+      } catch (error) {
+        console.error('Failed to load product detail:', error);
+        currentProduct = null;
+      }
       
       if (!currentProduct) {
         document.querySelector('.product-detail .container').innerHTML = `
@@ -215,15 +223,15 @@
       // Info
       document.getElementById('detail-brand').textContent = currentProduct.brand;
       document.getElementById('detail-name').textContent = currentProduct.name;
-      document.getElementById('detail-price').textContent = `฿${currentProduct.price.toLocaleString()}`;
+      document.getElementById('detail-price').textContent = `฿${Number(currentProduct.price).toLocaleString()}`;
       document.getElementById('detail-description').textContent = currentProduct.description;
 
       // Original price & discount
       const origEl = document.getElementById('detail-original-price');
       const discEl = document.getElementById('detail-discount');
       if (currentProduct.originalPrice) {
-        origEl.textContent = `฿${currentProduct.originalPrice.toLocaleString()}`;
-        const discount = Math.round((1 - currentProduct.price / currentProduct.originalPrice) * 100);
+        origEl.textContent = `฿${Number(currentProduct.originalPrice).toLocaleString()}`;
+        const discount = Math.round((1 - Number(currentProduct.price) / Number(currentProduct.originalPrice)) * 100);
         discEl.textContent = `-${discount}%`;
       } else {
         origEl.style.display = 'none';
@@ -233,13 +241,13 @@
       // Stars
       const starsContainer = document.getElementById('detail-stars');
       starsContainer.innerHTML = Array(5).fill('').map((_, i) => {
-        const filled = i < Math.floor(currentProduct.rating);
+        const filled = i < Math.floor(Number(currentProduct.rating || 0));
         return `<svg viewBox="0 0 24 24" fill="${filled ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
         </svg>`;
       }).join('');
 
-      document.getElementById('detail-reviews').textContent = `${currentProduct.rating} (${currentProduct.reviews} รีวิว)`;
+      document.getElementById('detail-reviews').textContent = `${Number(currentProduct.rating || 0)} (${Number(currentProduct.reviews || 0)} รีวิว)`;
     }
 
     function updateQty(delta) {
@@ -252,7 +260,7 @@
     function handleAddToCart() {
       if (!currentProduct) return;
       const qty = parseInt(document.getElementById('qty-input').value);
-      addToCart(currentProduct.id, qty);
+      addToCart(currentProduct.id, qty, currentProduct);
     }
 
     function handleBuyNow() {

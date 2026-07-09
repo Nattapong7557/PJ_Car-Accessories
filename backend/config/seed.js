@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const Product = require('../models/Product');
-const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const { connectDB, pool } = require('./db');
 
 dotenv.config();
 
@@ -9,6 +8,7 @@ const products = [
   {
     name: 'ล้อแม็ก Flowforming 18 นิ้ว Multi-Spoke',
     brand: 'RAYS',
+    carBrand: 'BMW',
     price: 28000,
     originalPrice: 35000,
     image: 'assets/images/products/wheel.png',
@@ -22,6 +22,7 @@ const products = [
   {
     name: 'สปอยเลอร์หลัง Carbon Fiber GT Wing',
     brand: 'ADRO',
+    carBrand: 'Mercedes-Benz',
     price: 18500,
     originalPrice: null,
     image: 'assets/images/products/spoiler.png',
@@ -35,6 +36,7 @@ const products = [
   {
     name: 'ปลายท่อไอเสีย Titanium Burnt Tip',
     brand: 'AKRAPOVIČ',
+    carBrand: 'Toyota',
     price: 12900,
     originalPrice: 15900,
     image: 'assets/images/products/exhaust.png',
@@ -48,6 +50,7 @@ const products = [
   {
     name: 'ไฟหน้า LED DRL Crystal Lens',
     brand: 'DEPO',
+    carBrand: 'Honda',
     price: 8900,
     originalPrice: null,
     image: 'assets/images/products/headlight.png',
@@ -61,6 +64,7 @@ const products = [
   {
     name: 'ชุดแต่งบอดี้คิท Front Lip Carbon',
     brand: 'EVENTURI',
+    carBrand: 'BMW',
     price: 22000,
     originalPrice: 28000,
     image: 'assets/images/products/bodykit.png',
@@ -74,6 +78,7 @@ const products = [
   {
     name: 'ชุดช่วงล่างปรับระดับ Coilover Kit',
     brand: 'KW',
+    carBrand: 'Toyota',
     price: 45000,
     originalPrice: 52000,
     image: 'assets/images/products/suspension.png',
@@ -87,6 +92,7 @@ const products = [
   {
     name: 'กระจังหน้า Glossy Black Kidney Grille',
     brand: 'AutoParts Pro',
+    carBrand: 'BMW',
     price: 3500,
     originalPrice: null,
     image: 'assets/images/products/grille.png',
@@ -100,6 +106,7 @@ const products = [
   {
     name: 'ครอบกระจกมองข้าง Carbon Fiber',
     brand: 'ADRO',
+    carBrand: 'Honda',
     price: 4200,
     originalPrice: 5500,
     image: 'assets/images/products/mirror.png',
@@ -113,6 +120,7 @@ const products = [
   {
     name: 'ดิฟฟิวเซอร์หลัง Carbon Fiber Quad Tip',
     brand: 'EVENTURI',
+    carBrand: 'Nissan',
     price: 19500,
     originalPrice: null,
     image: 'assets/images/products/diffuser.png',
@@ -126,6 +134,7 @@ const products = [
   {
     name: 'ชุดท่อไอดี Cold Air Intake Carbon',
     brand: 'EVENTURI',
+    carBrand: 'Toyota',
     price: 32000,
     originalPrice: 38000,
     image: 'assets/images/products/intake.png',
@@ -146,24 +155,93 @@ const adminUser = {
   phone: '021234567'
 };
 
+const normalizeSlug = (text) => {
+  return text.toString().trim().toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+};
+
+const getBrandId = async (table, name) => {
+  if (!name) return null;
+  const slug = normalizeSlug(name);
+  const { rows } = await pool.query(`SELECT id FROM ${table} WHERE name = $1 OR slug = $2 LIMIT 1`, [name, slug]);
+  return rows[0] ? rows[0].id : null;
+};
+
 const seedDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✅ Connected to MongoDB');
+    await connectDB();
+    console.log('✅ Connected to Neon PostgreSQL');
 
-    // ลบข้อมูลเก่า
-    await Product.deleteMany({});
-    await User.deleteMany({});
+    await pool.query('DELETE FROM orders');
+    await pool.query('DELETE FROM users');
+    await pool.query('DELETE FROM parts');
+    await pool.query('DELETE FROM part_brands');
+    await pool.query('DELETE FROM car_brands');
+
     console.log('🗑️  Cleared existing data');
 
-    // เพิ่มสินค้า
-    const createdProducts = await Product.insertMany(products);
-    console.log(`📦 Seeded ${createdProducts.length} products`);
+    const partBrands = ['RAYS', 'ADRO', 'AKRAPOVIČ', 'DEPO', 'EVENTURI', 'KW'];
+    const carBrands = ['BMW', 'Mercedes-Benz', 'Toyota', 'Honda', 'Nissan'];
 
-    // เพิ่ม admin user
-    const createdAdmin = await User.create(adminUser);
-    console.log(`👤 Created admin user: ${createdAdmin.email}`);
+    for (const name of partBrands) {
+      const slug = normalizeSlug(name);
+      await pool.query(
+        'INSERT INTO part_brands (name, slug, created_at, updated_at) VALUES ($1, $2, NOW(), NOW())',
+        [name, slug]
+      );
+    }
 
+    for (const name of carBrands) {
+      const slug = normalizeSlug(name);
+      await pool.query(
+        'INSERT INTO car_brands (name, slug, created_at, updated_at) VALUES ($1, $2, NOW(), NOW())',
+        [name, slug]
+      );
+    }
+
+    for (const item of products) {
+      const partBrandId = await getBrandId('part_brands', item.brand);
+      const carBrandId = await getBrandId('car_brands', item.carBrand);
+
+      await pool.query(
+        `INSERT INTO parts
+         (name, description, price, original_price, image, images, category, badge, rating, reviews, stock, is_active, part_brand_id, car_brand_id, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW(), NOW())`,
+        [
+          item.name,
+          item.description,
+          item.price,
+          item.originalPrice,
+          item.image,
+          JSON.stringify(item.images || []),
+          item.category,
+          item.badge,
+          item.rating,
+          item.reviews,
+          item.stock,
+          true,
+          partBrandId,
+          carBrandId
+        ]
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(adminUser.password, 12);
+    await pool.query(
+      `INSERT INTO users (name, email, password, phone, address, role, is_active, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())`,
+      [
+        adminUser.name,
+        adminUser.email,
+        hashedPassword,
+        adminUser.phone,
+        JSON.stringify({}),
+        adminUser.role,
+        true
+      ]
+    );
+
+    console.log(`📦 Seeded ${products.length} products`);
+    console.log(`👤 Created admin user: ${adminUser.email}`);
     console.log('\n✅ Seed completed successfully!');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('Admin Login:');

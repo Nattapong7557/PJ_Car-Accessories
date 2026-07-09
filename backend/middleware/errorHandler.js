@@ -8,29 +8,30 @@ const errorHandler = (err, req, res, next) => {
     console.error('❌ Error:', err);
   }
 
-  // Mongoose bad ObjectId
-  if (err.name === 'CastError') {
+  // PostgreSQL invalid text representation / bad numeric / bad input syntax
+  if (err.code === '22P02') {
     return res.status(400).json({
       success: false,
-      message: 'ไม่พบข้อมูลที่ร้องขอ (ID ไม่ถูกต้อง)'
+      message: 'ข้อมูลที่ส่งมาไม่ถูกต้อง'
     });
   }
 
-  // Mongoose duplicate key
-  if (err.code === 11000) {
-    const field = Object.keys(err.keyValue)[0];
+  // PostgreSQL unique violation
+  if (err.code === '23505') {
+    const detail = err.detail || '';
+    const match = detail.match(/\(([^)]+)\)=/);
+    const field = match ? match[1] : 'ข้อมูล';
     return res.status(400).json({
       success: false,
       message: `${field} นี้ถูกใช้งานแล้ว`
     });
   }
 
-  // Mongoose validation error
-  if (err.name === 'ValidationError') {
-    const messages = Object.values(err.errors).map(e => e.message);
+  // PostgreSQL foreign key violation
+  if (err.code === '23503') {
     return res.status(400).json({
       success: false,
-      message: messages.join(', ')
+      message: 'ข้อมูลสัมพันธ์ไม่ถูกต้อง'
     });
   }
 

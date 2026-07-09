@@ -5,138 +5,38 @@
 // ==========================================
 // Product Data
 // ==========================================
-const products = [
-  {
-    id: 1,
-    name: 'ล้อแม็ก Flowforming 18 นิ้ว Multi-Spoke',
-    brand: 'RAYS',
-    price: 28000,
-    originalPrice: 35000,
-    image: 'assets/images/products/wheel.png',
-    badge: 'sale',
-    category: 'promotion',
-    rating: 4.8,
-    reviews: 124,
-    description: 'ล้อแม็ก Flowforming น้ำหนักเบา แข็งแรงทนทาน ขนาด 18 นิ้ว ดีไซน์ Multi-Spoke สีดำด้านขอบเงา'
-  },
-  {
-    id: 2,
-    name: 'สปอยเลอร์หลัง Carbon Fiber GT Wing',
-    brand: 'ADRO',
-    price: 18500,
-    originalPrice: null,
-    image: 'assets/images/products/spoiler.png',
-    badge: 'new',
-    category: 'new',
-    rating: 4.6,
-    reviews: 56,
-    description: 'สปอยเลอร์หลังคาร์บอนไฟเบอร์แท้ ดีไซน์ GT Wing สำหรับรถเก๋ง น้ำหนักเบา เพิ่ม Downforce'
-  },
-  {
-    id: 3,
-    name: 'ปลายท่อไอเสีย Titanium Burnt Tip',
-    brand: 'AKRAPOVIČ',
-    price: 12900,
-    originalPrice: 15900,
-    image: 'assets/images/products/exhaust.png',
-    badge: 'hot',
-    category: 'bestseller',
-    rating: 4.9,
-    reviews: 203,
-    description: 'ปลายท่อไอเสียไทเทเนียม สีไล่เฉดจากความร้อน ให้เสียงทุ้มนุ่ม ติดตั้งง่าย'
-  },
-  {
-    id: 4,
-    name: 'ไฟหน้า LED DRL Crystal Lens',
-    brand: 'DEPO',
-    price: 8900,
-    originalPrice: null,
-    image: 'assets/images/products/headlight.png',
-    badge: 'new',
-    category: 'new',
-    rating: 4.5,
-    reviews: 87,
-    description: 'ชุดไฟหน้า LED พร้อม DRL ดีไซน์ Crystal Lens ให้แสงสว่างคมชัด ประหยัดพลังงาน'
-  },
-  {
-    id: 5,
-    name: 'ชุดแต่งบอดี้คิท Front Lip Carbon',
-    brand: 'EVENTURI',
-    price: 22000,
-    originalPrice: 28000,
-    image: 'assets/images/products/bodykit.png',
-    badge: 'sale',
-    category: 'promotion',
-    rating: 4.7,
-    reviews: 92,
-    description: 'Front Lip คาร์บอนไฟเบอร์แท้ ดีไซน์สปอร์ต เข้ากับรถยนต์ซีดาน เพิ่มความดุดันให้ส่วนหน้า'
-  },
-  {
-    id: 6,
-    name: 'ชุดช่วงล่างปรับระดับ Coilover Kit',
-    brand: 'KW',
-    price: 45000,
-    originalPrice: 52000,
-    image: 'assets/images/products/suspension.png',
-    badge: 'hot',
-    category: 'bestseller',
-    rating: 4.9,
-    reviews: 178,
-    description: 'ชุดช่วงล่าง Coilover ปรับระดับความสูงและความหนืดได้ สำหรับรถเก๋งสมรรถนะสูง'
-  },
-  {
-    id: 7,
-    name: 'กระจังหน้า Glossy Black Kidney Grille',
-    brand: 'AutoParts Pro',
-    price: 3500,
-    originalPrice: null,
-    image: 'assets/images/products/grille.png',
-    badge: 'new',
-    category: 'new',
-    rating: 4.4,
-    reviews: 65,
-    description: 'กระจังหน้าสีดำเงา ดีไซน์ Double Slat เปลี่ยนลุคให้ดูสปอร์ตดุดัน ติดตั้งง่าย'
-  },
-  {
-    id: 8,
-    name: 'ครอบกระจกมองข้าง Carbon Fiber',
-    brand: 'ADRO',
-    price: 4200,
-    originalPrice: 5500,
-    image: 'assets/images/products/mirror.png',
-    badge: 'sale',
-    category: 'promotion',
-    rating: 4.3,
-    reviews: 41,
-    description: 'ครอบกระจกมองข้างคาร์บอนไฟเบอร์แท้ ลายทอ 2x2 สวยงาม น้ำหนักเบา'
-  },
-  {
-    id: 9,
-    name: 'ดิฟฟิวเซอร์หลัง Carbon Fiber Quad Tip',
-    brand: 'EVENTURI',
-    price: 19500,
-    originalPrice: null,
-    image: 'assets/images/products/diffuser.png',
-    badge: 'hot',
-    category: 'bestseller',
-    rating: 4.8,
-    reviews: 95,
-    description: 'ดิฟฟิวเซอร์หลังคาร์บอนไฟเบอร์ ช่องท่อไอเสีย 4 ช่อง ดีไซน์ Aero ช่วยเพิ่มสมรรถนะ'
-  },
-  {
-    id: 10,
-    name: 'ชุดท่อไอดี Cold Air Intake Carbon',
-    brand: 'EVENTURI',
-    price: 32000,
-    originalPrice: 38000,
-    image: 'assets/images/products/intake.png',
-    badge: 'sale',
-    category: 'promotion',
-    rating: 4.7,
-    reviews: 156,
-    description: 'ชุดท่อไอดี Cold Air Intake กล่องคาร์บอนไฟเบอร์ กรองอากาศสีแดง เพิ่มแรงม้าให้เครื่องยนต์'
+let products = [];
+
+async function loadProducts() {
+  try {
+    const response = await fetch('/api/products');
+    const result = await response.json();
+
+    if (result && result.success && Array.isArray(result.data)) {
+      products = result.data.map(product => ({
+        ...product,
+        id: Number(product.id ?? product._id),
+        brand: product.brand || product.partBrand || 'AutoParts Pro',
+        carBrand: product.carBrand || product.car_brand || null,
+        originalPrice: product.originalPrice == null ? null : Number(product.originalPrice),
+        price: Number(product.price),
+        rating: Number(product.rating || 0),
+        reviews: Number(product.reviews || 0),
+        stock: Number(product.stock || 0),
+        images: Array.isArray(product.images) ? product.images : []
+      }));
+    } else {
+      products = [];
+    }
+
+    renderProducts('all');
+    updateCartCount();
+  } catch (error) {
+    console.error('Failed to load products:', error);
+    products = [];
+    renderProducts('all');
   }
-];
+}
 
 // ==========================================
 // Cart State
@@ -148,8 +48,9 @@ function saveCart() {
   updateCartCount();
 }
 
-function addToCart(productId, quantity = 1) {
-  const product = products.find(p => p.id === productId);
+function addToCart(productId, quantity = 1, productOverride = null) {
+  const normalizedId = Number(productId);
+  const product = productOverride || products.find(p => Number(p.id) === normalizedId);
   if (!product) return;
   
   const existing = cart.find(item => item.id === productId);
@@ -314,6 +215,17 @@ function createProductCard(product) {
 function renderProducts(filter = 'all') {
   const grid = document.getElementById('products-grid');
   if (!grid) return;
+
+  if (!products.length) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column: 1 / -1;">
+        <div class="empty-state__icon">📦</div>
+        <h3 class="empty-state__title">กำลังโหลดสินค้า</h3>
+        <p class="empty-state__text">รอสักครู่ขณะเชื่อมต่อกับฐานข้อมูล</p>
+      </div>
+    `;
+    return;
+  }
   
   const filtered = filter === 'all' 
     ? products 
@@ -612,6 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initHeaderScroll();
   renderProducts('all');
   updateCartCount();
+  loadProducts();
   
   // Delay scroll animations
   setTimeout(initScrollAnimations, 500);
