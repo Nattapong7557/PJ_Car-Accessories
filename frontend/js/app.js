@@ -231,6 +231,17 @@ function renderProducts(filter = 'all') {
     ? products 
     : products.filter(p => p.category === filter);
   
+  if (!filtered.length) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column: 1 / -1; text-align:center; padding:80px 0;">
+        <div class="empty-state__icon">📭</div>
+        <h3 class="empty-state__title">ไม่พบสินค้าหมวดนี้</h3>
+        <p class="empty-state__text">ลองเลือกหมวดอื่นหรือกลับไปหน้าหลัก</p>
+      </div>
+    `;
+    return;
+  }
+
   grid.innerHTML = filtered.map(createProductCard).join('');
   
   // Re-trigger animations
