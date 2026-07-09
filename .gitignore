@@ -10,5 +10,11 @@ desktop.ini
 # Dependencies
 node_modules/
 
+# Environment
+backend/.env
+
 # Gemini
 .agents/
+
+# Logs
+*.log
