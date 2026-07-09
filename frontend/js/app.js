@@ -227,9 +227,15 @@ function renderProducts(filter = 'all') {
     return;
   }
   
-  const filtered = filter === 'all' 
-    ? products 
-    : products.filter(p => p.category === filter);
+  let filtered;
+  if (filter === 'all') {
+    filtered = products;
+  } else if (filter === 'bestseller') {
+    // treat 'bestseller' as items with category 'bestseller' OR badge indicating hot/bestseller
+    filtered = products.filter(p => p.category === 'bestseller' || (p.badge && ['hot', 'bestseller'].includes(String(p.badge).toLowerCase())));
+  } else {
+    filtered = products.filter(p => p.category === filter);
+  }
   
   if (!filtered.length) {
     grid.innerHTML = `
