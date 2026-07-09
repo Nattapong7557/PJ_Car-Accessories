@@ -233,6 +233,12 @@ function renderProducts(filter = 'all') {
   } else if (filter === 'bestseller') {
     // treat 'bestseller' as items with category 'bestseller' OR badge indicating hot/bestseller
     filtered = products.filter(p => p.category === 'bestseller' || (p.badge && ['hot', 'bestseller'].includes(String(p.badge).toLowerCase())));
+  } else if (filter === 'promotion') {
+    // promotion tab should match category 'promotion' or sale/promotion badges
+    filtered = products.filter(p => p.category === 'promotion' || (p.badge && ['sale', 'promotion', 'promo'].includes(String(p.badge).toLowerCase())));
+  } else if (filter === 'new') {
+    // new tab should match category 'new' or badge 'new'
+    filtered = products.filter(p => p.category === 'new' || (p.badge && String(p.badge).toLowerCase() === 'new'));
   } else {
     filtered = products.filter(p => p.category === filter);
   }
