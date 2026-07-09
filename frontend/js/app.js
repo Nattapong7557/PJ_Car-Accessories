@@ -335,6 +335,35 @@ function initCategoryTabs() {
       tabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       renderProducts(tab.dataset.category);
+
+      // sync header nav active state when a category tab is clicked
+      const headerLink = document.querySelector(`.header__nav-link[data-category="${tab.dataset.category}"]`);
+      if (headerLink) {
+        document.querySelectorAll('.header__nav-link').forEach(l => l.classList.remove('active'));
+        headerLink.classList.add('active');
+      }
+    });
+  });
+}
+
+// Initialize header navigation links to filter products
+function initHeaderNav() {
+  const links = document.querySelectorAll('.header__nav-link');
+  if (!links || !links.length) return;
+
+  links.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      links.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+
+      const category = link.dataset.category || 'all';
+      // sync category tab active state
+      document.querySelectorAll('.categories__tab').forEach(t => t.classList.toggle('active', t.dataset.category === category));
+
+      renderProducts(category);
+      const productsSection = document.getElementById('products-section');
+      if (productsSection) window.scrollTo({ top: productsSection.offsetTop - 80, behavior: 'smooth' });
     });
   });
 }
@@ -516,6 +545,7 @@ function formatPrice(price) {
 document.addEventListener('DOMContentLoaded', () => {
   initLoading();
   initCarousel();
+  initHeaderNav();
   initCategoryTabs();
   initMobileMenu();
   initSearch();
