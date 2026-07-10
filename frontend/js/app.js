@@ -212,7 +212,7 @@ function createProductCard(product) {
   `;
 }
 
-function renderProducts(filter = 'all') {
+function renderProducts(filter = 'all', carBrand = null) {
   const grid = document.getElementById('products-grid');
   if (!grid) return;
 
@@ -245,7 +245,12 @@ function renderProducts(filter = 'all') {
   } else {
     filtered = products.filter(p => p.category === filter);
   }
-  
+
+  // Further narrow by car brand when a logo in the brand filter strip is selected
+  if (carBrand) {
+    filtered = filtered.filter(p => String(p.carBrand || '').toLowerCase() === String(carBrand).toLowerCase());
+  }
+
   if (!filtered.length) {
     grid.innerHTML = `
       <div class="empty-state" style="grid-column: 1 / -1; text-align:center; padding:80px 0;">
@@ -365,6 +370,74 @@ function initMobileMenu() {
     toggle.innerHTML = isOpen 
       ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>'
       : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>';
+  });
+}
+
+// ==========================================
+// Car Brand Logo Filter (horizontal smooth-scroll strip)
+// ==========================================
+function initBrandsFilter() {
+  const track = document.getElementById('brands-track');
+  if (!track) return;
+
+  const items = Array.from(track.querySelectorAll('.brands__item'));
+  let activeBrand = 'all';
+
+  // Smooth click-and-drag scrolling for mouse users
+  let isDown = false;
+  let didDrag = false;
+  let startX = 0;
+  let startScroll = 0;
+
+  track.addEventListener('mousedown', (e) => {
+    isDown = true;
+    didDrag = false;
+    startX = e.pageX;
+    startScroll = track.scrollLeft;
+    track.classList.add('dragging');
+  });
+
+  window.addEventListener('mouseup', () => {
+    isDown = false;
+    track.classList.remove('dragging');
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    const delta = e.pageX - startX;
+    if (Math.abs(delta) > 4) didDrag = true;
+    track.scrollLeft = startScroll - delta;
+  });
+
+  // Click a logo to filter products by that car brand; click again (or "ทั้งหมด") to reset
+  items.forEach((item) => {
+    item.addEventListener('click', () => {
+      if (didDrag) return; // ignore the click that follows a drag gesture
+
+      const brand = item.dataset.carBrand;
+      activeBrand = activeBrand === brand ? 'all' : brand;
+
+      items.forEach((i) => i.classList.toggle('active', i.dataset.carBrand === activeBrand));
+
+      // Reset the "สินค้าทั้งหมด" category dropdown so the two filters don't conflict
+      const dropdownTrigger = document.getElementById('tab-all');
+      const dropdownMenu = document.getElementById('category-dropdown-menu');
+      if (dropdownMenu) {
+        dropdownMenu.querySelectorAll('.categories__dropdown-checkbox').forEach((cb) => {
+          cb.checked = false;
+        });
+      }
+      if (dropdownTrigger) {
+        const label = dropdownTrigger.querySelector('span');
+        if (label) label.textContent = 'สินค้าทั้งหมด';
+        dropdownTrigger.classList.add('active');
+      }
+
+      renderProducts('all', activeBrand === 'all' ? null : activeBrand);
+
+      // Keep the selected logo comfortably in view
+      item.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    });
   });
 }
 
@@ -648,6 +721,7 @@ function formatPrice(price) {
 document.addEventListener('DOMContentLoaded', () => {
   initLoading();
   initCarousel();
+  initBrandsFilter();
   initMobileMenu();
   initSearch();
   initLoginModal();
