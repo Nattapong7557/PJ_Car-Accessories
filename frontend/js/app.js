@@ -417,36 +417,58 @@ function initSearch() {
   const input = document.getElementById('search-input');
   
   if (!form || !input) return;
-  
+
+  const runSearch = () => {
+    const query = input.value.trim();
+
+    // Empty input -> auto reset back to the full list
+    if (!query) {
+      document.querySelectorAll('.categories__tab').forEach(t => t.classList.toggle('active', t.dataset.category === 'all'));
+      renderProducts('all');
+      return;
+    }
+
+    const lowerQuery = query.toLowerCase();
+    const results = products.filter(p =>
+      p.name.toLowerCase().includes(lowerQuery) ||
+      p.brand.toLowerCase().includes(lowerQuery) ||
+      p.description.toLowerCase().includes(lowerQuery)
+    );
+
+    const grid = document.getElementById('products-grid');
+    if (grid) {
+      if (results.length > 0) {
+        grid.innerHTML = results.map(createProductCard).join('');
+      } else {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <div class="empty-state__icon">🔍</div>
+            <h3 class="empty-state__title">ไม่พบสินค้า</h3>
+            <p class="empty-state__text">ลองค้นหาด้วยคำอื่น</p>
+          </div>
+        `;
+      }
+    }
+
+    // Reset category tabs since search overrides category filtering
+    document.querySelectorAll('.categories__tab').forEach(t => t.classList.remove('active'));
+  };
+
+  // Debounce so we don't re-render on every rapid keystroke
+  let debounceTimer = null;
+  const debouncedSearch = () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(runSearch, 250);
+  };
+
+  // Live search as the user types (covers typing, pasting, and clearing the field)
+  input.addEventListener('input', debouncedSearch);
+
+  // Keep submit working too (e.g. pressing Enter), runs immediately with no delay
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const query = input.value.trim();
-    if (query) {
-      const results = products.filter(p => 
-        p.name.includes(query) || 
-        p.brand.toLowerCase().includes(query.toLowerCase()) ||
-        p.description.includes(query)
-      );
-      
-      const grid = document.getElementById('products-grid');
-      if (grid) {
-        if (results.length > 0) {
-          grid.innerHTML = results.map(createProductCard).join('');
-          showNotification(`พบ ${results.length} สินค้าที่ค้นหา`);
-        } else {
-          grid.innerHTML = `
-            <div class="empty-state" style="grid-column: 1 / -1;">
-              <div class="empty-state__icon">🔍</div>
-              <h3 class="empty-state__title">ไม่พบสินค้า</h3>
-              <p class="empty-state__text">ลองค้นหาด้วยคำอื่น</p>
-            </div>
-          `;
-        }
-      }
-      
-      // Reset category tabs
-      document.querySelectorAll('.categories__tab').forEach(t => t.classList.remove('active'));
-    }
+    clearTimeout(debounceTimer);
+    runSearch();
   });
 }
 
