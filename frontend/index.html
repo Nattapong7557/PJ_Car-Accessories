@@ -32,13 +32,6 @@
           </div>
         </a>
 
-        <!-- Mobile Menu Toggle -->
-        <button class="header__menu-toggle" id="menu-toggle" aria-label="เปิดเมนู">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 12h18M3 6h18M3 18h18"/>
-          </svg>
-        </button>
-
         <!-- Search Bar -->
         <div class="header__search">
           <form class="header__search-form" id="search-form">
@@ -81,21 +74,6 @@
           </button>
         </div>
       </div>
-
-      <!-- Navigation -->
-      <nav class="header__nav" id="main-nav" aria-label="เมนูหลัก">
-        <ul class="header__nav-list">
-          <li class="header__nav-item">
-            <a href="#" class="header__nav-link active" id="nav-promo" data-category="promotion">สินค้าโปรโมชั่น</a>
-          </li>
-          <li class="header__nav-item">
-            <a href="#" class="header__nav-link" id="nav-new" data-category="new">สินค้าใหม่</a>
-          </li>
-          <li class="header__nav-item">
-            <a href="#" class="header__nav-link" id="nav-bestseller" data-category="bestseller">สินค้าขายดี</a>
-          </li>
-        </ul>
-      </nav>
     </div>
   </header>
 
@@ -176,10 +154,60 @@
     <section class="categories" id="categories-section">
       <div class="container">
         <div class="categories__tabs" id="category-tabs">
-          <button class="categories__tab active" data-category="all" id="tab-all">สินค้าทั้งหมด</button>
-          <button class="categories__tab" data-category="promotion" id="tab-promo">โปรโมชั่น</button>
-          <button class="categories__tab" data-category="new" id="tab-new">สินค้าใหม่</button>
-          <button class="categories__tab" data-category="bestseller" id="tab-best">ขายดี</button>
+          <div class="categories__dropdown" id="category-dropdown">
+            <button class="categories__tab categories__tab--dropdown active" data-category="all" id="tab-all">
+              <span>สินค้าทั้งหมด</span>
+              <svg class="categories__dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+            <div class="categories__dropdown-menu" id="category-dropdown-menu">
+              <label class="categories__dropdown-item">
+                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="spoiler">
+                <span>สปอยเลอร์</span>
+              </label>
+              <label class="categories__dropdown-item">
+                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="seat">
+                <span>เบาะ</span>
+              </label>
+              <label class="categories__dropdown-item">
+                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="wheel">
+                <span>ล้อแม็ก</span>
+              </label>
+              <label class="categories__dropdown-item">
+                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="steering">
+                <span>พวงมาลัย</span>
+              </label>
+              <label class="categories__dropdown-item">
+                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="hood">
+                <span>ฝากระโปรง</span>
+              </label>
+              <label class="categories__dropdown-item">
+                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="exhaust-tip">
+                <span>ปลายท่อไอเสีย</span>
+              </label>
+              <label class="categories__dropdown-item">
+                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="bumper">
+                <span>กันชน</span>
+              </label>
+              <label class="categories__dropdown-item">
+                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="headlight">
+                <span>ไฟหน้า</span>
+              </label>
+              <label class="categories__dropdown-item">
+                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="grille">
+                <span>กระจังหน้า</span>
+              </label>
+              <label class="categories__dropdown-item">
+                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="front-lip">
+                <span>ลิ้นหน้า</span>
+              </label>
+              <label class="categories__dropdown-item">
+                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="mirror-cover">
+                <span>ครอบกระจก</span>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -385,5 +413,54 @@
 
   <!-- JavaScript -->
   <script src="js/app.js"></script>
+  <script>
+    // Categories "สินค้าทั้งหมด" dropdown with checkbox filters
+    (function () {
+      const dropdown = document.getElementById('category-dropdown');
+      const trigger = document.getElementById('tab-all');
+      const menu = document.getElementById('category-dropdown-menu');
+      if (!dropdown || !trigger || !menu) return;
+
+      const label = trigger.querySelector('span');
+      const baseLabel = label ? label.textContent : 'สินค้าทั้งหมด';
+      const checkboxes = Array.from(menu.querySelectorAll('.categories__dropdown-checkbox'));
+
+      const closeDropdown = () => dropdown.classList.remove('open');
+
+      const updateLabelAndFilter = () => {
+        const checked = checkboxes.filter((cb) => cb.checked).map((cb) => cb.dataset.subcategory);
+
+        // Update button label to reflect selection count
+        if (label) {
+          label.textContent = checked.length ? `${baseLabel} (${checked.length})` : baseLabel;
+        }
+        trigger.classList.toggle('active', checked.length === 0);
+        dropdown.classList.toggle('has-selection', checked.length > 0);
+
+        // Filter products: no checkboxes checked -> show all, otherwise match any checked category
+        if (typeof renderProducts === 'function') {
+          renderProducts(checked.length ? checked : 'all');
+        }
+      };
+
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        dropdown.classList.toggle('open');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) closeDropdown();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeDropdown();
+      });
+
+      // Keep dropdown open while checking/unchecking so users can select multiple items
+      checkboxes.forEach((cb) => {
+        cb.addEventListener('change', updateLabelAndFilter);
+      });
+    })();
+  </script>
 </body>
 </html>

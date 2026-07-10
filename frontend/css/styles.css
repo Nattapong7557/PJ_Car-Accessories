@@ -579,6 +579,81 @@ input {
   box-shadow: var(--shadow-glow);
 }
 
+/* Categories Dropdown ("สินค้าทั้งหมด") */
+.categories__dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.categories__tab--dropdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.categories__dropdown-arrow {
+  width: 14px;
+  height: 14px;
+  transition: transform var(--transition-normal);
+}
+
+.categories__dropdown.open .categories__dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.categories__dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 200px;
+  background: var(--color-bg-card, #fff);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg, 0 10px 30px rgba(0, 0, 0, 0.12));
+  padding: var(--space-sm) 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity var(--transition-normal), transform var(--transition-normal), visibility var(--transition-normal);
+  z-index: 20;
+}
+
+.categories__dropdown.open .categories__dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.categories__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.categories__dropdown-item:hover {
+  background: var(--color-bg-card-hover, var(--color-bg-tertiary));
+  color: var(--color-accent-primary);
+}
+
+.categories__dropdown-checkbox {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--color-accent-primary, #6c5ce7);
+  cursor: pointer;
+}
+
 /* ============================================
    Product Grid
    ============================================ */
