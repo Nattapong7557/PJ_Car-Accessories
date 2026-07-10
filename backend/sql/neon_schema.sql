@@ -39,6 +39,15 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS parts;
 DROP TABLE IF EXISTS part_brands;
 DROP TABLE IF EXISTS car_brands;
+DROP TABLE IF EXISTS roles;
+
+CREATE TABLE roles (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE,
+  description VARCHAR(255),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
 
 CREATE TABLE part_brands (
   id BIGSERIAL PRIMARY KEY,
@@ -83,7 +92,7 @@ CREATE TABLE users (
   password VARCHAR(255) NOT NULL,
   phone VARCHAR(30),
   address JSONB DEFAULT '{}'::jsonb,
-  role VARCHAR(20) DEFAULT 'user',
+  role_id BIGINT REFERENCES roles(id) ON DELETE SET NULL,
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -113,6 +122,7 @@ CREATE INDEX idx_parts_part_brand_id ON parts(part_brand_id);
 CREATE INDEX idx_parts_car_brand_id ON parts(car_brand_id);
 CREATE INDEX idx_parts_category ON parts(category);
 CREATE INDEX idx_parts_is_active ON parts(is_active);
+CREATE INDEX idx_users_role_id ON users(role_id);
 
 CREATE OR REPLACE VIEW part_catalog AS
 SELECT
@@ -167,6 +177,11 @@ INSERT INTO part_brands (name, slug) VALUES
   ('DEPO', 'depo'),
   ('EVENTURI', 'eventuri'),
   ('KW', 'kw');
+
+INSERT INTO roles (name, description) VALUES
+  ('admin', 'Administrator role with full access'),
+  ('user', 'Regular user role'),
+  ('manager', 'Manager role with limited admin access');
 
 INSERT INTO car_brands (name, slug) VALUES
   ('BMW', 'bmw'),

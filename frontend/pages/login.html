@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เข้าสู่ระบบ - AutoParts Pro</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/auth.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>เข้าสู่ระบบ</h1>
+        <p>กรุณาเข้าสู่ระบบเพื่อเข้าถึงบัญชีของคุณ</p>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label for="email">อีเมล</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            placeholder="example@email.com"
+            required
+          >
+          <span class="error-message" id="emailError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="password">รหัสผ่าน</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="กรุณากรอกรหัสผ่าน"
+            required
+          >
+          <span class="error-message" id="passwordError"></span>
+        </div>
+
+        <div class="form-group checkbox">
+          <input type="checkbox" id="rememberMe" name="rememberMe">
+          <label for="rememberMe">จำรหัสผ่านบนเครื่องนี้</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-submit">
+          <span>เข้าสู่ระบบ</span>
+          <span class="loading-spinner" id="loadingSpinner"></span>
+        </button>
+
+        <div class="error-alert" id="errorAlert"></div>
+        <div class="success-alert" id="successAlert"></div>
+      </form>
+
+      <div class="auth-footer">
+        <p>ยังไม่มีบัญชี? <a href="register.html">สมัครสมาชิก</a></p>
+        <p><a href="index.html" class="forgot-password">กลับไปหน้าแรก</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+  </script>
+</body>
+</html>

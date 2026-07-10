@@ -8,7 +8,8 @@ const mapUserRow = (row, includePassword = false) => ({
   email: row.email,
   phone: row.phone,
   address: typeof row.address === 'string' ? JSON.parse(row.address) : row.address || {},
-  role: row.role,
+  role: 'user', // Default role, will be 'user' unless role_id is linked
+  roleId: row.role_id,
   isActive: row.is_active,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
@@ -30,14 +31,14 @@ const attachUserMethods = (user) => {
     }
 
     const { rows } = await pool.query(
-      `UPDATE users SET name=$1, email=$2, password=$3, phone=$4, address=$5, role=$6, is_active=$7, updated_at=NOW() WHERE id=$8 RETURNING *`,
+      `UPDATE users SET name=$1, email=$2, password=$3, phone=$4, address=$5, role_id=$6, is_active=$7, updated_at=NOW() WHERE id=$8 RETURNING *`,
       [
         user.name,
         user.email,
         passwordValue,
         user.phone,
         JSON.stringify(user.address || {}),
-        user.role,
+        user.roleId,
         user.isActive,
         user._id
       ]
@@ -92,8 +93,18 @@ const User = {
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(data.password, salt);
 
+    // Get default 'user' role ID
+    let roleId = data.roleId;
+    if (!roleId) {
+      const { rows: roleRows } = await pool.query(
+        'SELECT id FROM roles WHERE name = $1',
+        ['user']
+      );
+      roleId = roleRows[0]?.id || null;
+    }
+
     const { rows } = await pool.query(
-      `INSERT INTO users (name, email, password, phone, address, role, is_active, created_at, updated_at)
+      `INSERT INTO users (name, email, password, phone, address, role_id, is_active, created_at, updated_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING *`,
       [
         data.name,
@@ -101,7 +112,7 @@ const User = {
         hashedPassword,
         data.phone || null,
         JSON.stringify(data.address || {}),
-        data.role || 'user',
+        roleId,
         data.isActive !== undefined ? data.isActive : true
       ]
     );

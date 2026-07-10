@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>รายการสั่งซื้อ - AutoParts Pro</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .orders-container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    .orders-header {
+      margin-bottom: 30px;
+    }
+    .orders-header h1 {
+      font-size: 28px;
+      color: var(--color-text-primary);
+      margin-bottom: 8px;
+    }
+    .order-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .order-id {
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    .order-status {
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .order-status.pending {
+      background: rgba(255, 193, 7, 0.2);
+      color: #ffc107;
+    }
+    .order-status.processing {
+      background: rgba(33, 150, 243, 0.2);
+      color: #2196f3;
+    }
+    .order-status.completed {
+      background: rgba(76, 175, 80, 0.2);
+      color: #4caf50;
+    }
+    .order-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .order-info-item {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+    .order-info-label {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .empty-orders {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .empty-orders-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    .empty-orders-text {
+      color: var(--color-text-secondary);
+      margin-bottom: 24px;
+    }
+    .btn-shop {
+      display: inline-block;
+      background: var(--color-accent-primary);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn-shop:hover {
+      background: #ff8c5a;
+    }
+    @media (max-width: 768px) {
+      .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div class="loading-overlay" id="loading">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">AUTOPARTS PRO</div>
+  </div>
+
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="container">
+      <div class="header__top">
+        <a href="../index.html" class="header__logo">
+          <img src="../assets/images/logo.png" alt="AutoParts Pro Logo">
+          <div class="header__logo-text">
+            <span class="header__logo-name">AutoParts</span>
+            <span class="header__logo-slogan">Pro Performance</span>
+          </div>
+        </a>
+        <button class="header__menu-toggle" id="menu-toggle" aria-label="เปิดเมนู">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"/>
+          </svg>
+        </button>
+        <div class="header__actions">
+          <button class="header__action" id="login-btn"></button>
+          <a href="cart.html" class="header__action" id="cart-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="cart-count">(0)</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Orders Section -->
+  <main class="orders-container">
+    <div class="orders-header">
+      <h1>รายการสั่งซื้อของฉัน</h1>
+      <p style="color: var(--color-text-secondary);">ดูรายละเอียดการสั่งซื้อและสถานะการจัดส่ง</p>
+    </div>
+
+    <div id="ordersContent">
+      <div class="empty-orders">
+        <div class="empty-orders-icon">📦</div>
+        <h3 style="color: var(--color-text-primary); margin-bottom: 8px;">ยังไม่มีการสั่งซื้อ</h3>
+        <p class="empty-orders-text">คุณยังไม่มีการสั่งซื้อสินค้า</p>
+        <a href="../index.html" class="btn-shop">เลือกซื้อสินค้า</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    // Check if user is logged in
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!isUserLoggedIn()) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      updateAuthUI();
+      loadOrders();
+    });
+
+    async function loadOrders() {
+      try {
+        const token = getAuthToken();
+        const response = await fetch('/api/orders', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to load orders');
+        }
+
+        const data = await response.json();
+        displayOrders(data.data || []);
+      } catch (error) {
+        console.error('Error loading orders:', error);
+      }
+    }
+
+    function displayOrders(orders) {
+      const content = document.getElementById('ordersContent');
+      
+      if (!orders || orders.length === 0) {
+        content.innerHTML = `
+          <div class="empty-orders">
+            <div class="empty-orders-icon">📦</div>
+            <h3 style="color: var(--color-text-primary); margin-bottom: 8px;">ยังไม่มีการสั่งซื้อ</h3>
+            <p class="empty-orders-text">คุณยังไม่มีการสั่งซื้อสินค้า</p>
+            <a href="../index.html" class="btn-shop">เลือกซื้อสินค้า</a>
+          </div>
+        `;
+        return;
+      }
+
+      const statusLabels = {
+        pending: 'รอการชำระเงิน',
+        processing: 'กำลังประมวลผล',
+        completed: 'สำเร็จ'
+      };
+
+      content.innerHTML = orders.map(order => `
+        <div class="order-card">
+          <div class="order-header">
+            <div class="order-id">คำสั่งซื้อ #${order.id || order._id}</div>
+            <span class="order-status ${order.status}">${statusLabels[order.status] || order.status}</span>
+          </div>
+          <div class="order-info">
+            <div class="order-info-item">
+              <div class="order-info-label">วันสั่งซื้อ</div>
+              <div>${new Date(order.created_at || order.createdAt).toLocaleDateString('th-TH')}</div>
+            </div>
+            <div class="order-info-item">
+              <div class="order-info-label">จำนวนรวม</div>
+              <div>฿${order.total_amount || order.totalAmount || 0}</div>
+            </div>
+            <div class="order-info-item">
+              <div class="order-info-label">จำนวนสินค้า</div>
+              <div>${order.items?.length || 0} ชิ้น</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>

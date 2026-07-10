@@ -451,36 +451,135 @@ function initSearch() {
 }
 
 // ==========================================
-// Login Modal
+// Authentication
+// ==========================================
+
+function getAuthToken() {
+  return localStorage.getItem('authToken');
+}
+
+function getCurrentUser() {
+  const user = localStorage.getItem('currentUser');
+  return user ? JSON.parse(user) : null;
+}
+
+function isUserLoggedIn() {
+  return !!getAuthToken();
+}
+
+function logoutUser() {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('currentUser');
+  localStorage.removeItem('tokenTimestamp');
+  location.reload();
+}
+
+function updateAuthUI() {
+  const loginBtn = document.getElementById('login-btn');
+  const user = getCurrentUser();
+  
+  if (!loginBtn) return;
+  
+  if (isUserLoggedIn() && user) {
+    // User is logged in
+    loginBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span>${user.name}</span>
+    `;
+    loginBtn.onclick = showUserMenu;
+  } else {
+    // User is not logged in
+    loginBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span>ลงชื่อเข้าใช้</span>
+    `;
+    loginBtn.onclick = () => window.location.href = 'pages/login.html';
+  }
+}
+
+function showUserMenu(e) {
+  e.stopPropagation();
+  
+  // Remove existing menu
+  const existing = document.querySelector('.user-menu');
+  if (existing) {
+    existing.remove();
+    return;
+  }
+  
+  const user = getCurrentUser();
+  const menu = document.createElement('div');
+  menu.className = 'user-menu';
+  menu.innerHTML = `
+    <div class="user-menu__item user-menu__header">
+      <div class="user-menu__name">${user.name}</div>
+      <div class="user-menu__email">${user.email}</div>
+    </div>
+    <div class="user-menu__divider"></div>
+    <a href="pages/cart.html" class="user-menu__item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="9" cy="21" r="1"/>
+        <circle cx="20" cy="21" r="1"/>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+      </svg>
+      ตะกร้าสินค้า
+    </a>
+    <a href="pages/orders.html" class="user-menu__item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 11H3v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-11h-6m0 0V7a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4m0 0l1 12m3 0l1-12"/>
+      </svg>
+      รายการสั่งซื้อ
+    </a>
+    <div class="user-menu__divider"></div>
+    <button class="user-menu__item" onclick="logoutUser();">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 14l5-5m0 0l-5-5m5 5H9"/>
+      </svg>
+      ออกจากระบบ
+    </button>
+  `;
+  
+  menu.style.cssText = `
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 250px;
+    z-index: 2000;
+    animation: slideDown 0.2s ease-out;
+  `;
+  
+  document.querySelector('.header__actions').style.position = 'relative';
+  document.querySelector('.header__actions').appendChild(menu);
+  
+  // Close on outside click
+  document.addEventListener('click', function closeMenu(e) {
+    if (!menu.contains(e.target) && e.target !== document.getElementById('login-btn')) {
+      menu.remove();
+      document.removeEventListener('click', closeMenu);
+    }
+  });
+}
+
+// ==========================================
+// Login Modal (Updated)
 // ==========================================
 function initLoginModal() {
   const loginBtn = document.getElementById('login-btn');
-  const modal = document.getElementById('login-modal');
   
-  if (!loginBtn || !modal) return;
+  if (!loginBtn) return;
   
-  const closeBtn = modal.querySelector('.modal__close');
-  const backdrop = modal.querySelector('.modal__backdrop');
-  const form = modal.querySelector('.login-form');
-  
-  loginBtn.addEventListener('click', () => modal.classList.add('active'));
-  if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-  if (backdrop) backdrop.addEventListener('click', () => modal.classList.remove('active'));
-  
-  if (form) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      modal.classList.remove('active');
-      showNotification('เข้าสู่ระบบสำเร็จ!');
-    });
-  }
-  
-  // Close on Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('active')) {
-      modal.classList.remove('active');
-    }
-  });
+  // Update auth UI on page load
+  updateAuthUI();
 }
 
 // ==========================================
