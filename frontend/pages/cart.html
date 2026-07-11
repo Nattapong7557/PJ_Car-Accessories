@@ -115,6 +115,10 @@
               <span>ส่วนลด</span>
               <span id="discount-amount" style="color: var(--color-green);">-฿0</span>
             </div>
+            <div class="cart-summary__row">
+              <span>ภาษีมูลค่าเพิ่ม (VAT 7%)</span>
+              <span id="vat-amount">฿0</span>
+            </div>
             <div class="cart-summary__row cart-summary__row--total">
               <span>ยอดรวมทั้งสิ้น</span>
               <span id="total">฿0</span>
@@ -204,11 +208,13 @@
       const subtotal = getCartTotal();
       const shipping = subtotal >= 2000 ? 0 : 150;
       const discount = 0;
-      const total = subtotal + shipping - discount;
+      const vat = Math.round((subtotal - discount) * 0.07);
+      const total = subtotal + shipping - discount + vat;
 
       document.getElementById('subtotal').textContent = `฿${subtotal.toLocaleString()}`;
       document.getElementById('shipping').textContent = shipping === 0 ? 'ฟรี' : `฿${shipping}`;
       document.getElementById('discount-amount').textContent = `-฿${discount.toLocaleString()}`;
+      document.getElementById('vat-amount').textContent = `฿${vat.toLocaleString()}`;
       document.getElementById('total').textContent = `฿${total.toLocaleString()}`;
     }
 
