@@ -8,13 +8,22 @@ const mapUserRow = (row, includePassword = false) => ({
   email: row.email,
   phone: row.phone,
   address: typeof row.address === 'string' ? JSON.parse(row.address) : row.address || {},
-  role: 'user', // Default role, will be 'user' unless role_id is linked
+  // ดึงชื่อ role จริงจากตาราง roles ผ่าน role_id (join ที่ query),
+  // ถ้าไม่มี role_id หรือหา role_name ไม่เจอ ค่อย fallback เป็น 'user'
+  role: row.role_name || 'user',
   roleId: row.role_id,
   isActive: row.is_active,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
   ...(includePassword ? { password: row.password } : {})
 });
+
+// ดึงชื่อ role จาก roles table ตาม role_id (ใช้ตอน create/save ที่ RETURNING * ไม่มี join)
+const getRoleName = async (roleId) => {
+  if (!roleId) return 'user';
+  const { rows } = await pool.query('SELECT name FROM roles WHERE id = $1', [roleId]);
+  return rows[0]?.name || 'user';
+};
 
 const attachUserMethods = (user) => {
   user.comparePassword = async (candidatePassword) => {
@@ -45,7 +54,8 @@ const attachUserMethods = (user) => {
     );
 
     if (rows[0]) {
-      const updated = mapUserRow(rows[0], false);
+      const roleName = await getRoleName(rows[0].role_id);
+      const updated = mapUserRow({ ...rows[0], role_name: roleName }, false);
       Object.assign(user, updated);
       user._originalPassword = rows[0].password;
       user.password = rows[0].password;
@@ -64,11 +74,11 @@ const User = {
       const values = [];
 
       if (query.email) {
-        conditions.push(`email = $${values.length + 1}`);
+        conditions.push(`u.email = $${values.length + 1}`);
         values.push(query.email);
       }
 
-      let sql = 'SELECT * FROM users';
+      let sql = 'SELECT u.*, r.name AS role_name FROM users u LEFT JOIN roles r ON u.role_id = r.id';
       if (conditions.length > 0) {
         sql += ` WHERE ${conditions.join(' AND ')}`;
       }
@@ -82,7 +92,12 @@ const User = {
   },
 
   async findById(id) {
-    const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    const { rows } = await pool.query(`
+      SELECT u.*, r.name AS role_name
+      FROM users u
+      LEFT JOIN roles r ON u.role_id = r.id
+      WHERE u.id = $1
+    `, [id]);
     if (!rows[0]) return null;
     const user = attachUserMethods(mapUserRow(rows[0], false));
     user._originalPassword = rows[0].password;
@@ -117,7 +132,8 @@ const User = {
       ]
     );
 
-    const user = attachUserMethods(mapUserRow(rows[0], false));
+    const roleName = await getRoleName(rows[0].role_id);
+    const user = attachUserMethods(mapUserRow({ ...rows[0], role_name: roleName }, false));
     user._originalPassword = rows[0].password;
     return user;
   },
@@ -133,6 +149,17 @@ const User = {
   async deleteMany() {
     await pool.query('DELETE FROM users');
     return { deletedCount: 1 };
+  },
+
+  // ดึงรายชื่อ user ทั้งหมด พร้อมชื่อ role จริง (ใช้สำหรับหน้า admin dashboard)
+  async findAll() {
+    const { rows } = await pool.query(`
+      SELECT u.*, r.name AS role_name
+      FROM users u
+      LEFT JOIN roles r ON u.role_id = r.id
+      ORDER BY u.id ASC
+    `);
+    return rows.map((row) => mapUserRow(row, false));
   }
 };
 

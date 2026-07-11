@@ -134,6 +134,7 @@ const createTables = async () => {
     )
   `);
 
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS product_reviews (
       id BIGSERIAL PRIMARY KEY,
       part_id BIGINT REFERENCES parts(id) ON DELETE CASCADE,
