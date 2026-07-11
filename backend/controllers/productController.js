@@ -5,14 +5,20 @@ const Product = require('../models/Product');
 // @access  Public
 const getProducts = async (req, res, next) => {
   try {
-    const { category, search, sort, page = 1, limit = 20, minPrice, maxPrice } = req.query;
+    const { category, carBrand, search, sort, page = 1, limit = 20, minPrice, maxPrice } = req.query;
     
     // Build query
     const query = { isActive: true };
 
-    // กรองตามหมวดหมู่
+    // กรองตามหมวดหมู่ (รองรับ comma-separated เช่น spoiler,wheel)
     if (category && category !== 'all') {
-      query.category = category;
+      const categories = category.split(',').map(c => c.trim()).filter(Boolean);
+      query.category = categories.length === 1 ? categories[0] : categories;
+    }
+
+    // กรองตาม car brand
+    if (carBrand && carBrand !== 'all') {
+      query.carBrand = carBrand;
     }
 
     // ค้นหาด้วยคำค้น

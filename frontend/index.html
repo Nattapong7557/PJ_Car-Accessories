@@ -473,6 +473,9 @@
       const updateLabelAndFilter = () => {
         const checked = checkboxes.filter((cb) => cb.checked).map((cb) => cb.dataset.subcategory);
 
+        // Update global activeCategories state
+        activeCategories = checked;
+
         // Update button label to reflect selection count
         if (label) {
           label.textContent = checked.length ? `${baseLabel} (${checked.length})` : baseLabel;
@@ -480,10 +483,8 @@
         trigger.classList.toggle('active', checked.length === 0);
         dropdown.classList.toggle('has-selection', checked.length > 0);
 
-        // Filter products: no checkboxes checked -> show all, otherwise match any checked category
-        if (typeof renderProducts === 'function') {
-          renderProducts(checked.length ? checked : 'all');
-        }
+        // Re-fetch products from API with the new filter
+        loadProducts();
       };
 
       trigger.addEventListener('click', (e) => {

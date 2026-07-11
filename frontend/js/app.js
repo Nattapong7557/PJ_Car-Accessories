@@ -7,9 +7,26 @@
 // ==========================================
 let products = [];
 
+// ==========================================
+// Filter State
+// ==========================================
+let activeCarBrand = null;
+let activeCategories = [];
+let productsLoaded = false;
+
 async function loadProducts() {
   try {
-    const response = await fetch('/api/products');
+    // Build query params from filter state
+    const params = new URLSearchParams();
+    if (activeCarBrand) {
+      params.set('carBrand', activeCarBrand);
+    }
+    if (activeCategories.length > 0) {
+      params.set('category', activeCategories.join(','));
+    }
+
+    const url = '/api/products' + (params.toString() ? '?' + params.toString() : '');
+    const response = await fetch(url);
     const result = await response.json();
 
     if (result && result.success && Array.isArray(result.data)) {
@@ -29,11 +46,13 @@ async function loadProducts() {
       products = [];
     }
 
+    productsLoaded = true;
     renderProducts('all');
     updateCartCount();
   } catch (error) {
     console.error('Failed to load products:', error);
     products = [];
+    productsLoaded = true;
     renderProducts('all');
   }
 }
@@ -217,13 +236,23 @@ function renderProducts(filter = 'all') {
   if (!grid) return;
 
   if (!products.length) {
-    grid.innerHTML = `
-      <div class="empty-state" style="grid-column: 1 / -1;">
-        <div class="empty-state__icon">📦</div>
-        <h3 class="empty-state__title">กำลังโหลดสินค้า</h3>
-        <p class="empty-state__text">รอสักครู่ขณะเชื่อมต่อกับฐานข้อมูล</p>
-      </div>
-    `;
+    if (!productsLoaded) {
+      grid.innerHTML = `
+        <div class="empty-state" style="grid-column: 1 / -1;">
+          <div class="empty-state__icon">📦</div>
+          <h3 class="empty-state__title">กำลังโหลดสินค้า</h3>
+          <p class="empty-state__text">รอสักครู่ขณะเชื่อมต่อกับฐานข้อมูล</p>
+        </div>
+      `;
+    } else {
+      grid.innerHTML = `
+        <div class="empty-state" style="grid-column: 1 / -1; text-align:center; padding:80px 0;">
+          <div class="empty-state__icon">📭</div>
+          <h3 class="empty-state__title">ไม่พบสินค้าที่ตรงกับตัวกรอง</h3>
+          <p class="empty-state__text">ลองเปลี่ยนยี่ห้อรถหรือหมวดหมู่แล้วลองใหม่</p>
+        </div>
+      `;
+    }
     return;
   }
   
@@ -387,6 +416,44 @@ function initHeaderNav() {
       renderProducts(category);
       const productsSection = document.getElementById('products-section');
       if (productsSection) window.scrollTo({ top: productsSection.offsetTop - 80, behavior: 'smooth' });
+    });
+  });
+}
+
+// ==========================================
+// Car Brand Filter
+// ==========================================
+function initBrandFilter() {
+  const brandButtons = document.querySelectorAll('.brands__item[data-car-brand]');
+  if (!brandButtons.length) return;
+
+  brandButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const brand = btn.dataset.carBrand;
+
+      if (activeCarBrand === brand) {
+        // Deselect — toggle off
+        activeCarBrand = null;
+        btn.classList.remove('active');
+      } else {
+        // Select new brand
+        activeCarBrand = brand;
+        brandButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+
+      // Update section title
+      const title = document.getElementById('products-title');
+      if (title) {
+        if (activeCarBrand) {
+          const brandName = btn.getAttribute('aria-label') || brand;
+          title.textContent = `สินค้าสำหรับ ${brandName}`;
+        } else {
+          title.textContent = 'สินค้าแนะนำ';
+        }
+      }
+
+      loadProducts();
     });
   });
 }
@@ -698,6 +765,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCarousel();
   initHeaderNav();
   initCategoryTabs();
+  initBrandFilter();
   initMobileMenu();
   initSearch();
   initLoginModal();
