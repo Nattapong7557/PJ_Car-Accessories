@@ -84,10 +84,10 @@
     <!-- Main Navigation -->
     <nav class="header__nav" id="header-nav">
       <ul class="header__nav-list">
-        <li class="header__nav-item"><a href="#" class="header__nav-link active">สินค้าทั่วไป</a></li>
-        <li class="header__nav-item"><a href="#" class="header__nav-link">สินค้าโปรโมชั่น</a></li>
-        <li class="header__nav-item"><a href="#" class="header__nav-link">สินค้าใหม่</a></li>
-        <li class="header__nav-item"><a href="#" class="header__nav-link">สินค้าขายดี</a></li>
+        <li class="header__nav-item"><a href="#" class="header__nav-link" data-category="general">สินค้าทั่วไป</a></li>
+        <li class="header__nav-item"><a href="#" class="header__nav-link" data-category="promotion">สินค้าโปรโมชั่น</a></li>
+        <li class="header__nav-item"><a href="#" class="header__nav-link" data-category="new">สินค้าใหม่</a></li>
+        <li class="header__nav-item"><a href="#" class="header__nav-link" data-category="bestseller">สินค้าขายดี</a></li>
       </ul>
     </nav>
   </header>
@@ -193,74 +193,73 @@
       </div>
     </section>
 
-    <!-- Category Filter Tabs -->
-    <section class="categories" id="categories-section">
-      <div class="container">
-        <div class="categories__tabs" id="category-tabs">
-          <div class="categories__filter" id="category-dropdown">
-            <button class="categories__filter-btn active" data-category="all" id="tab-all">
-              <span>สินค้าทั้งหมด</span>
-              <svg class="categories__filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M6 9l6 6 6-6"/>
-              </svg>
-            </button>
-            <div class="categories__filter-panel" id="category-dropdown-menu">
-              <label class="filter-checkbox">
-                <input type="checkbox" data-subcategory="spoiler">
-                <span>สปอยเลอร์</span>
-              </label>
-              <label class="filter-checkbox">
-                <input type="checkbox" data-subcategory="seat">
-                <span>เบาะ</span>
-              </label>
-              <label class="filter-checkbox">
-                <input type="checkbox" data-subcategory="wheel">
-                <span>ล้อแม็ก</span>
-              </label>
-              <label class="filter-checkbox">
-                <input type="checkbox" data-subcategory="steering">
-                <span>พวงมาลัย</span>
-              </label>
-              <label class="filter-checkbox">
-                <input type="checkbox" data-subcategory="hood">
-                <span>ฝากระโปรง</span>
-              </label>
-              <label class="filter-checkbox">
-                <input type="checkbox" data-subcategory="exhaust-tip">
-                <span>ปลายท่อไอเสีย</span>
-              </label>
-              <label class="filter-checkbox">
-                <input type="checkbox" data-subcategory="bumper">
-                <span>กันชน</span>
-              </label>
-              <label class="filter-checkbox">
-                <input type="checkbox" data-subcategory="headlight">
-                <span>ไฟหน้า</span>
-              </label>
-              <label class="filter-checkbox">
-                <input type="checkbox" data-subcategory="grille">
-                <span>กระจังหน้า</span>
-              </label>
-              <label class="filter-checkbox">
-                <input type="checkbox" data-subcategory="front-lip">
-                <span>ลิ้นหน้า</span>
-              </label>
-              <label class="filter-checkbox">
-                <input type="checkbox" data-subcategory="mirror-cover">
-                <span>ครอบกระจก</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Products Grid -->
     <section class="products" id="products-section" aria-label="รายการสินค้า">
       <div class="container">
+        <!-- Category Filter Dropdown -->
+        <div class="categories__filter" id="category-dropdown">
+          <button class="categories__filter-btn active" data-category="all" id="tab-all">
+            <span>สินค้าทั้งหมด</span>
+            <svg class="categories__filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </button>
+          <div class="categories__filter-panel" id="category-dropdown-menu">
+            <label class="filter-checkbox">
+              <input type="checkbox" data-subcategory="spoiler">
+              <span>สปอยเลอร์</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" data-subcategory="seat">
+              <span>เบาะ</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" data-subcategory="wheel">
+              <span>ล้อแม็ก</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" data-subcategory="steering">
+              <span>พวงมาลัย</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" data-subcategory="hood">
+              <span>ฝากระโปรง</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" data-subcategory="exhaust-tip">
+              <span>ปลายท่อไอเสีย</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" data-subcategory="bumper">
+              <span>กันชน</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" data-subcategory="headlight">
+              <span>ไฟหน้า</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" data-subcategory="grille">
+              <span>กระจังหน้า</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" data-subcategory="front-lip">
+              <span>ลิ้นหน้า</span>
+            </label>
+            <label class="filter-checkbox">
+              <input type="checkbox" data-subcategory="mirror-cover">
+              <span>ครอบกระจก</span>
+            </label>
+          </div>
+        </div>
+
         <h1 class="products__section-title" id="products-title">สินค้าแนะนำ</h1>
         <div class="products__grid" id="products-grid">
           <!-- Products rendered by JavaScript -->
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination" id="pagination">
+          <!-- Pagination buttons rendered by JavaScript -->
         </div>
       </div>
     </section>

@@ -135,6 +135,17 @@ const createTables = async () => {
   `);
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS product_reviews (
+      id BIGSERIAL PRIMARY KEY,
+      part_id BIGINT REFERENCES parts(id) ON DELETE CASCADE,
+      user_name VARCHAR(100) NOT NULL,
+      rating NUMERIC(2, 1) NOT NULL,
+      comment TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS user_address (
       id BIGSERIAL PRIMARY KEY,
       user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,

@@ -6,6 +6,32 @@
   padding: var(--space-2xl) 0;
 }
 
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px 16px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: var(--space-lg);
+  transition: all var(--transition-fast);
+}
+
+.btn-back:hover {
+  background: var(--color-bg-card-hover);
+  border-color: var(--color-accent-primary);
+  color: var(--color-accent-primary);
+}
+
+.btn-back svg {
+  width: 18px;
+  height: 18px;
+}
+
 .product-detail__breadcrumb {
   display: flex;
   align-items: center;
@@ -702,4 +728,267 @@
 
 @keyframes payment-spin {
   to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   Product Reviews Section
+   ============================================ */
+.product-reviews {
+  padding: var(--space-xl) 0 var(--space-3xl);
+  background: var(--color-bg-primary);
+}
+
+.reviews-container {
+  width: 100%;
+}
+
+.reviews-header {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.reviews-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.reviews-count-badge {
+  background: var(--color-accent-primary);
+  color: white;
+  font-size: 0.9rem;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.reviews-empty, .reviews-loading {
+  text-align: center;
+  padding: var(--space-xl) 0;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.review-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  transition: border-color var(--transition-fast);
+}
+
+.review-card:hover {
+  border-color: var(--color-border-hover);
+}
+
+.review-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.review-card__avatar {
+  width: 44px;
+  height: 44px;
+  background: var(--color-accent-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.review-card__info {
+  flex: 1;
+}
+
+.review-card__name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+
+.review-card__date {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.review-card__rating {
+  color: var(--color-gold);
+  font-size: 1.1rem;
+}
+
+.review-star {
+  color: var(--color-border);
+}
+
+.review-star.filled {
+  color: var(--color-gold);
+}
+
+.review-card__comment {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.reviews-show-more {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  margin-bottom: var(--space-2xl);
+  transition: all var(--transition-fast);
+}
+
+.reviews-show-more:hover {
+  border-color: var(--color-accent-primary);
+  color: var(--color-accent-primary);
+}
+
+/* Review Form */
+.review-form-container {
+  background: var(--color-bg-card);
+  padding: var(--space-2xl);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  margin-top: var(--space-xl);
+}
+
+.review-form-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: var(--space-xl);
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-form-title::before {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 20px;
+  background: var(--color-accent-primary);
+  border-radius: 4px;
+}
+
+.review-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.form-group label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.form-input {
+  padding: 14px 16px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all var(--transition-fast);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-accent-primary);
+  background: var(--color-bg-primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+.star-rating-input {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.star-rating-input input {
+  display: none;
+}
+
+.star-rating-input label {
+  font-size: 2.5rem;
+  color: var(--color-border);
+  cursor: pointer;
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.star-rating-input label:hover {
+  transform: scale(1.15);
+}
+
+.star-rating-input label:hover,
+.star-rating-input label:hover ~ label,
+.star-rating-input input:checked ~ label {
+  color: var(--color-gold);
+}
+
+.review-submit-btn {
+  padding: 16px;
+  background: var(--color-accent-gradient);
+  color: white;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-top: var(--space-sm);
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.review-submit-btn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-glow);
+}
+
+.review-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }

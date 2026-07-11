@@ -627,33 +627,31 @@ input {
 
 .categories__tabs {
   display: flex;
-  gap: var(--space-md);
+  justify-content: center;
+  gap: var(--space-lg);
   margin-bottom: var(--space-xl);
   flex-wrap: wrap;
 }
 
 .categories__tab {
-  padding: 10px 24px;
-  background: var(--color-bg-tertiary);
+  padding: 12px 20px;
+  background: transparent;
   color: var(--color-text-secondary);
-  border-radius: var(--radius-lg);
-  font-weight: 500;
-  font-size: 0.9rem;
-  border: 1px solid var(--color-border);
-  transition: all var(--transition-normal);
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-bottom: 3px solid transparent;
+  transition: all var(--transition-fast);
+  cursor: pointer;
 }
 
 .categories__tab:hover {
-  background: var(--color-bg-card-hover);
   color: var(--color-text-primary);
-  border-color: var(--color-border-hover);
 }
 
 .categories__tab.active {
-  background: var(--color-accent-gradient);
-  color: white;
-  border-color: transparent;
-  box-shadow: var(--shadow-glow);
+  color: var(--color-accent-primary);
+  border-bottom-color: var(--color-accent-primary);
 }
 
 /* ============================================
@@ -662,7 +660,7 @@ input {
 .categories__filter {
   position: relative;
   display: inline-block;
-  margin-bottom: var(--space-md);
+  margin: var(--space-xl) 0;
 }
 
 .categories__filter-btn {
@@ -1023,6 +1021,50 @@ input {
 .product-card__review-count {
   font-size: 0.7rem;
   color: var(--color-text-muted);
+}
+
+/* ============================================
+   Pagination
+   ============================================ */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-2xl);
+}
+
+.pagination__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pagination__btn:hover {
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-border-hover);
+}
+
+.pagination__btn.active {
+  background: var(--color-accent-primary);
+  color: white;
+  border-color: var(--color-accent-primary);
+}
+
+.pagination__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* ============================================
