@@ -14,109 +14,207 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: var(--color-bg-secondary);
+      background: radial-gradient(circle at 10% 20%, rgba(255, 107, 53, 0.04) 0%, rgba(255, 255, 255, 0) 40%),
+                  radial-gradient(circle at 90% 80%, rgba(67, 97, 238, 0.04) 0%, rgba(255, 255, 255, 0) 40%),
+                  var(--color-bg-secondary);
       padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Blur Blobs */
+    .ambient-blur {
+      position: absolute;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      filter: blur(120px);
+      z-index: -1;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .ambient-blur-1 {
+      top: -10%;
+      left: -10%;
+      background: var(--color-accent-secondary);
+    }
+
+    .ambient-blur-2 {
+      bottom: -10%;
+      right: -10%;
+      background: var(--color-blue);
     }
 
     .profile-card {
       position: relative;
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-card);
-      padding: 44px 40px 40px;
+      box-shadow: var(--shadow-lg);
+      padding: 40px;
+      transition: transform var(--transition-normal), box-shadow var(--transition-normal);
     }
 
-    .profile-card::before {
-      content: '';
-      position: absolute;
-      top: -3px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 56px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--color-accent-gradient);
+    .profile-card:hover {
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
     }
 
     .profile-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
       margin-bottom: 30px;
     }
 
+    /* Premium Avatar Concept */
+    .avatar-wrapper {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      margin-bottom: 16px;
+    }
+
+    .avatar-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--color-accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 36px;
+      font-weight: 800;
+      box-shadow: 0 8px 20px rgba(255, 107, 53, 0.2);
+      border: 4px solid var(--color-bg-card);
+    }
+
+    .avatar-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      background: #1a1a2e;
+      color: #ffffff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--color-bg-card);
+      box-shadow: var(--shadow-sm);
+    }
+
     .profile-header h1 {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 700;
       color: var(--color-text-primary);
-      margin: 0 0 8px 0;
+      margin: 0 0 6px 0;
     }
 
     .profile-header p {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--color-text-secondary);
       margin: 0;
+      background: var(--color-bg-secondary);
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-weight: 500;
+      display: inline-block;
     }
 
     .profile-form {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
     }
 
     .form-group label {
       display: block;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--color-text-primary);
       margin-bottom: 8px;
     }
 
-    .form-group input,
-    .form-group textarea {
+    /* Input with Icon Wrapper */
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper svg {
+      position: absolute;
+      left: 16px;
+      color: var(--color-text-muted);
+      pointer-events: none;
+      transition: color var(--transition-fast);
+    }
+
+    .input-wrapper input,
+    .input-wrapper textarea {
       width: 100%;
-      padding: 14px 16px;
+      padding: 14px 16px 14px 48px;
       background-color: var(--color-bg-input);
       border: 1.5px solid transparent;
       border-radius: var(--radius-md);
       font-family: inherit;
       font-size: 15px;
       color: var(--color-text-primary);
-      transition: border-color var(--transition-fast), background-color var(--transition-fast);
+      transition: border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
       resize: vertical;
     }
 
-    .form-group input::placeholder,
-    .form-group textarea::placeholder {
+    .input-wrapper input::placeholder,
+    .input-wrapper textarea::placeholder {
       color: var(--color-text-muted);
     }
 
-    .form-group input:focus,
-    .form-group textarea:focus {
+    .input-wrapper input:focus,
+    .input-wrapper textarea:focus {
       outline: none;
       border-color: var(--color-accent-primary);
       background-color: var(--color-bg-card);
-      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.12);
+      box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
     }
 
-    .form-group input.error,
-    .form-group textarea.error {
+    .input-wrapper input:focus + svg,
+    .input-wrapper textarea:focus + svg {
+      color: var(--color-accent-primary);
+    }
+
+    .input-wrapper input.error,
+    .input-wrapper textarea.error {
       border-color: var(--color-red);
+      background-color: rgba(230, 57, 70, 0.02);
     }
 
     .field-hint {
       display: block;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--color-text-muted);
       margin-top: 6px;
+      padding-left: 4px;
     }
 
     .field-error {
       display: block;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--color-red);
       min-height: 16px;
-      margin-top: 6px;
+      margin-top: 4px;
+      padding-left: 4px;
+      font-weight: 500;
     }
 
     .btn-save {
@@ -129,24 +227,43 @@
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      transition: opacity var(--transition-fast), transform var(--transition-fast);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.25);
+      transition: all var(--transition-normal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .btn-save:hover:not(:disabled) {
-      opacity: 0.92;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255, 107, 53, 0.4);
+      opacity: 0.95;
+    }
+
+    .btn-save:active:not(:disabled) {
+      transform: translateY(0);
     }
 
     .btn-save:disabled {
       opacity: 0.65;
       cursor: not-allowed;
+      box-shadow: none;
     }
 
     .alert-message {
       display: none;
-      padding: 12px 14px;
-      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
       font-size: 13px;
       text-align: center;
+      font-weight: 500;
+      animation: fadeIn var(--transition-normal);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .alert-message.show {
@@ -154,13 +271,15 @@
     }
 
     .alert-message.error {
-      background-color: rgba(230, 57, 70, 0.1);
+      background-color: rgba(230, 57, 70, 0.08);
+      border: 1px solid rgba(230, 57, 70, 0.15);
       color: var(--color-red);
     }
 
     .alert-message.success {
-      background-color: rgba(46, 196, 182, 0.12);
-      color: #1f8f83;
+      background-color: rgba(46, 196, 182, 0.08);
+      border: 1px solid rgba(46, 196, 182, 0.15);
+      color: #1a8277;
     }
 
     .profile-footer {
@@ -173,78 +292,120 @@
     .profile-footer a {
       font-size: 13px;
       color: var(--color-text-secondary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color var(--transition-fast), transform var(--transition-fast);
+      font-weight: 500;
     }
 
     .profile-footer a:hover {
       color: var(--color-accent-primary);
+      transform: translateX(-2px);
     }
 
     @media (max-width: 480px) {
       .profile-card {
-        padding: 36px 24px 32px;
-      }
-
-      .profile-header h1 {
-        font-size: 22px;
+        padding: 30px 20px;
       }
     }
   </style>
 </head>
 <body>
+  <div class="ambient-blur ambient-blur-1"></div>
+  <div class="ambient-blur ambient-blur-2"></div>
+
   <div class="profile-card">
     <div class="profile-header">
       <h1>แก้ไขโปรไฟล์</h1>
-      <p>อัปเดตข้อมูลส่วนตัวของคุณ</p>
+      <p id="user-role">สมาชิกทั่วไป</p>
     </div>
 
     <form id="profileForm" class="profile-form" novalidate>
       <div class="form-group">
         <label for="name">ชื่อ</label>
-        <input type="text" id="name" name="name" placeholder="กรุณากรอกชื่อของคุณ" required>
+        <div class="input-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <input type="text" id="name" name="name" placeholder="กรุณากรอกชื่อของคุณ" required>
+        </div>
         <span class="field-error" id="nameError"></span>
       </div>
 
       <div class="form-group">
         <label for="email">อีเมล</label>
-        <input type="email" id="email" name="email" placeholder="example@email.com" required>
+        <div class="input-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          <input type="email" id="email" name="email" placeholder="example@email.com" required>
+        </div>
         <span class="field-hint">หากเปลี่ยนอีเมล กรุณาใช้อีเมลใหม่ในการเข้าสู่ระบบครั้งถัดไป</span>
         <span class="field-error" id="emailError"></span>
       </div>
 
       <div class="form-group">
         <label for="phone">เบอร์โทรศัพท์</label>
-        <input
-          type="tel"
-          id="phone"
-          name="phone"
-          placeholder="0812345678"
-          inputmode="numeric"
-          pattern="[0-9]*"
-          maxlength="10"
-          autocomplete="tel"
-        >
+        <div class="input-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            placeholder="0812345678"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="10"
+            autocomplete="tel"
+          >
+        </div>
         <span class="field-error" id="phoneError"></span>
       </div>
 
       <div class="form-group">
         <label for="address">ที่อยู่การจัดส่ง</label>
-        <textarea
-          id="address"
-          name="address"
-          rows="2"
-          placeholder="บ้านเลขที่ ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด รหัสไปรษณีย์"
-        ></textarea>
+        <div class="input-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; top: 16px;">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <textarea
+            id="address"
+            name="address"
+            rows="3"
+            placeholder="บ้านเลขที่ ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด รหัสไปรษณีย์"
+          ></textarea>
+        </div>
         <span class="field-error" id="addressError"></span>
       </div>
 
       <div class="alert-message error" id="errorAlert"></div>
       <div class="alert-message success" id="successAlert"></div>
 
-      <button type="submit" class="btn-save" id="saveBtn">บันทึกการเปลี่ยนแปลง</button>
+      <button type="submit" class="btn-save" id="saveBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 16px; height: 16px;">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        <span>บันทึกการเปลี่ยนแปลง</span>
+      </button>
     </form>
 
     <div class="profile-footer">
-      <a href="../index.html">กลับไปหน้าแรก</a>
+      <a href="../index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;">
+          <line x1="19" y1="12" x2="5" y2="12"/>
+          <polyline points="12 19 5 12 12 5"/>
+        </svg>
+        กลับไปหน้าแรก
+      </a>
     </div>
   </div>
 
@@ -299,6 +460,12 @@
         document.getElementById('email').value = user.email || '';
         document.getElementById('phone').value = user.phone || '';
         document.getElementById('address').value = (user.address && user.address.full) || '';
+        
+        // Update role badge
+        if (user.role) {
+          const roleText = user.role === 'admin' ? 'ผู้ดูแลระบบ (Admin)' : 'สมาชิกทั่วไป (Member)';
+          document.getElementById('user-role').textContent = roleText;
+        }
       } catch (error) {
         console.error('Load profile error:', error);
         showAlert('error', error.message || 'ไม่สามารถโหลดข้อมูลโปรไฟล์ได้');
@@ -342,9 +509,14 @@
       if (hasError) return;
 
       const saveBtn = document.getElementById('saveBtn');
-      const originalText = saveBtn.textContent;
+      const originalHTML = saveBtn.innerHTML;
       saveBtn.disabled = true;
-      saveBtn.textContent = 'กำลังบันทึก...';
+      saveBtn.innerHTML = `
+        <svg class="spinner" viewBox="0 0 50 50" style="width: 18px; height: 18px; animation: rotate 2s linear infinite; margin-right: 8px;">
+          <circle cx="25" cy="25" r="20" fill="none" stroke="currentColor" stroke-width="5" stroke-dasharray="80, 200" stroke-dashoffset="0" stroke-linecap="round"></circle>
+        </svg>
+        <span>กำลังบันทึก...</span>
+      `;
 
       try {
         const token = getAuthToken();
@@ -375,15 +547,26 @@
           role: data.data.role
         });
 
+
+
         showAlert('success', data.message || 'บันทึกการเปลี่ยนแปลงสำเร็จ');
       } catch (error) {
         console.error('Update profile error:', error);
         showAlert('error', error.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
       } finally {
         saveBtn.disabled = false;
-        saveBtn.textContent = originalText;
+        saveBtn.innerHTML = originalHTML;
       }
     });
+
+    // Add spinner styles keyframe in script block dynamically
+    const spinnerStyle = document.createElement('style');
+    spinnerStyle.innerHTML = `
+      @keyframes rotate {
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(spinnerStyle);
   </script>
 </body>
 </html>

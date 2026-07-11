@@ -45,8 +45,8 @@
       font-weight: 500;
     }
     .order-status.pending {
-      background: rgba(255, 193, 7, 0.2);
-      color: #ffc107;
+      background: rgba(76, 175, 80, 0.2);
+      color: #4caf50;
     }
     .order-status.processing {
       background: rgba(33, 150, 243, 0.2);
@@ -211,15 +211,15 @@
       }
 
       const statusLabels = {
-        pending: 'รอการชำระเงิน',
+        pending: 'รอจัดส่ง',
         processing: 'กำลังประมวลผล',
         completed: 'สำเร็จ'
       };
 
-      content.innerHTML = orders.map(order => `
+      content.innerHTML = orders.map((order, index) => `
         <div class="order-card">
           <div class="order-header">
-            <div class="order-id">คำสั่งซื้อ #${order.id || order._id}</div>
+            <div class="order-id">คำสั่งซื้อ #${orders.length - index}</div>
             <span class="order-status ${order.status}">${statusLabels[order.status] || order.status}</span>
           </div>
           <div class="order-info">
@@ -235,6 +235,18 @@
               <div class="order-info-label">จำนวนสินค้า</div>
               <div>${order.items?.length || 0} ชิ้น</div>
             </div>
+          </div>
+          <div class="order-items-list" style="margin-top: 20px; border-top: 1px dashed var(--color-border); padding-top: 16px;">
+            <div class="order-info-label" style="margin-bottom: 12px;">รายการสินค้า</div>
+            ${(order.items || []).map(item => `
+              <div class="order-item" style="display: flex; gap: 16px; margin-bottom: 12px; align-items: center;">
+                <img src="../${item.image}" alt="${item.name}" onerror="this.src='../assets/images/placeholder.jpg'" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid var(--color-border); background: #fff;">
+                <div>
+                  <div style="font-weight: 600; color: var(--color-text-primary); font-size: 0.95rem; margin-bottom: 4px;">${item.name}</div>
+                  <div style="font-size: 0.85rem; color: var(--color-text-secondary);">จำนวน: ${item.quantity} ชิ้น | ราคาต่อชิ้น: ฿${item.price}</div>
+                </div>
+              </div>
+            `).join('')}
           </div>
         </div>
       `).join('');

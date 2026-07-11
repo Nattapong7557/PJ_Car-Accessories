@@ -85,12 +85,12 @@ function addToCart(productId, quantity = 1, productOverride = null) {
 }
 
 function removeFromCart(productId) {
-  cart = cart.filter(item => item.id !== productId);
+  cart = cart.filter(item => String(item.id) !== String(productId));
   saveCart();
 }
 
 function updateCartQuantity(productId, quantity) {
-  const item = cart.find(i => i.id === productId);
+  const item = cart.find(i => String(i.id) === String(productId));
   if (item) {
     item.quantity = Math.max(1, quantity);
     saveCart();
@@ -222,6 +222,9 @@ function createProductCard(product) {
         <div class="product-card__rating">
           <div class="product-card__stars">${stars}</div>
           <span class="product-card__review-count">(${product.reviews})</span>
+        </div>
+        <div class="product-card__stock" style="font-size: 0.85rem; color: var(--color-text-secondary); margin-top: 8px;">
+          เหลือสินค้า: <span style="color: ${product.stock > 0 ? 'var(--color-accent-primary)' : 'var(--color-red)'}; font-weight: 600;">${product.stock || 0}</span> ชิ้น
         </div>
       </div>
     </div>
@@ -671,6 +674,9 @@ function updateAuthUI() {
   
   if (!loginBtn) return;
   
+  const isSubpage = window.location.pathname.includes('/pages/');
+  const pathPrefix = isSubpage ? '' : 'pages/';
+  
   if (isUserLoggedIn() && user) {
     // User is logged in
     loginBtn.innerHTML = `
@@ -681,6 +687,7 @@ function updateAuthUI() {
       <span>${user.name}</span>
     `;
     loginBtn.onclick = showUserMenu;
+    setupAdminNavbar(user);
   } else {
     // User is not logged in
     loginBtn.innerHTML = `
@@ -690,7 +697,8 @@ function updateAuthUI() {
       </svg>
       <span>ลงชื่อเข้าใช้</span>
     `;
-    loginBtn.onclick = () => window.location.href = 'pages/login.html';
+    loginBtn.onclick = () => window.location.href = pathPrefix + 'login.html';
+    setupAdminNavbar(null);
   }
 }
 
@@ -707,34 +715,39 @@ function showUserMenu(e) {
   const user = getCurrentUser();
   const menu = document.createElement('div');
   menu.className = 'user-menu';
+  
+  const isSubpage = window.location.pathname.includes('/pages/');
+  const pathPrefix = isSubpage ? '' : 'pages/';
+  
   menu.innerHTML = `
     <div class="user-menu__item user-menu__header">
       <div class="user-menu__name">${user.name}</div>
       <div class="user-menu__email">${user.email}</div>
     </div>
     <div class="user-menu__divider"></div>
-    <a href="pages/profile.html" class="user-menu__item">
+    <a href="${pathPrefix}profile.html" class="user-menu__item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
         <circle cx="12" cy="7" r="4"/>
       </svg>
       แก้ไขโปรไฟล์
     </a>
-    <a href="pages/cart.html" class="user-menu__item">
+    <a href="${pathPrefix}orders.html" class="user-menu__item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="9" cy="21" r="1"/>
-        <circle cx="20" cy="21" r="1"/>
-        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/>
       </svg>
-      ตะกร้าสินค้า
-    </a>
-    <a href="pages/orders.html" class="user-menu__item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 11H3v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-11h-6m0 0V7a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4m0 0l1 12m3 0l1-12"/>
-      </svg>
-      รายการสั่งซื้อ
+      ประวัติการสั่งซื้อ
     </a>
     <div class="user-menu__divider"></div>
+    ${user.role === 'admin' ? `
+    <a href="#" class="user-menu__item" id="admin-mermaid-dropdown-btn" style="color: #ff6b35 !important; font-weight: bold;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+      สถาปัตยกรรมระบบ (Mermaid)
+    </a>
+    <div class="user-menu__divider"></div>
+    ` : ''}
     <button class="user-menu__item" onclick="logoutUser();">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 14l5-5m0 0l-5-5m5 5H9"/>
@@ -758,6 +771,16 @@ function showUserMenu(e) {
   
   document.querySelector('.header__actions').style.position = 'relative';
   document.querySelector('.header__actions').appendChild(menu);
+
+  const adminBtn = menu.querySelector('#admin-mermaid-dropdown-btn');
+  if (adminBtn) {
+    adminBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      menu.remove();
+      window.showMermaidModal();
+    });
+  }
   
   // Close on outside click
   document.addEventListener('click', function closeMenu(e) {
@@ -881,3 +904,276 @@ document.addEventListener('DOMContentLoaded', () => {
   // Delay scroll animations
   setTimeout(initScrollAnimations, 500);
 });
+
+// ==========================================
+// Admin Mermaid Diagram Features
+// ==========================================
+function setupAdminNavbar(user) {
+  const existing = document.querySelector('.admin-only');
+  if (existing) existing.remove();
+}
+
+let currentMermaidView = 'simple';
+
+window.showMermaidModal = function() {
+  let modal = document.getElementById('admin-mermaid-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'admin-mermaid-modal';
+    modal.innerHTML = `
+      <div class="modal__backdrop" onclick="window.closeMermaidModal()"></div>
+      <div class="modal__content" style="max-width: 850px; width: 90%; background: #111122; border: 1.5px solid rgba(255, 107, 53, 0.4); border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); padding: 30px; position: relative; color: #f0f0f5; z-index: 10000; font-family: 'Kanit', sans-serif;">
+        <button class="modal__close" onclick="window.closeMermaidModal()" aria-label="ปิด" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #fff; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 24px; height: 24px;"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+        <h2 style="margin: 0 0 20px 0; font-size: 22px; font-weight: 700; color: #ff6b35; display: flex; align-items: center; gap: 10px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px; height:28px;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          สถาปัตยกรรมระบบ (System Architecture)
+        </h2>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+          <button id="mermaid-btn-simple" class="btn-tab active" onclick="window.switchMermaidView('simple')" style="padding: 8px 20px; border: none; border-radius: 20px; background: linear-gradient(135deg, #ff6b35, #ff8c5a); color: white; font-weight: 600; cursor: pointer; font-family: inherit;">แบบง่าย (Simple)</button>
+          <button id="mermaid-btn-detailed" class="btn-tab" onclick="window.switchMermaidView('detailed')" style="padding: 8px 20px; border: 1.5px solid rgba(255,255,255,0.15); border-radius: 20px; background: transparent; color: #b0b0c0; font-weight: 600; cursor: pointer; font-family: inherit;">แบบละเอียด (Detailed)</button>
+          <button id="mermaid-btn-patterns" class="btn-tab" onclick="window.switchMermaidView('patterns')" style="padding: 8px 20px; border: 1.5px solid rgba(255,255,255,0.15); border-radius: 20px; background: transparent; color: #b0b0c0; font-weight: 600; cursor: pointer; font-family: inherit;">รูปแบบสถาปัตยกรรม (Patterns)</button>
+          <button id="mermaid-btn-solid" class="btn-tab" onclick="window.switchMermaidView('solid')" style="padding: 8px 20px; border: 1.5px solid rgba(255,255,255,0.15); border-radius: 20px; background: transparent; color: #b0b0c0; font-weight: 600; cursor: pointer; font-family: inherit;">หลักการ SOLID</button>
+          <button id="mermaid-btn-platforms" class="btn-tab" onclick="window.switchMermaidView('platforms')" style="padding: 8px 20px; border: 1.5px solid rgba(255,255,255,0.15); border-radius: 20px; background: transparent; color: #b0b0c0; font-weight: 600; cursor: pointer; font-family: inherit;">ประเภทแพลตฟอร์ม (Platforms)</button>
+        </div>
+
+        <div class="mermaid-container" style="background: rgba(255, 255, 255, 0.03); padding: 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); overflow: auto; max-height: 520px; display: flex; justify-content: center; align-items: center; min-height: 250px;">
+          <!-- Diagram rendered here -->
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    const style = document.createElement('style');
+    style.innerHTML = `
+      #admin-mermaid-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 99999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      #admin-mermaid-modal.active {
+        display: flex;
+        opacity: 1;
+      }
+      #admin-mermaid-modal .modal__backdrop {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: rgba(8, 8, 16, 0.85);
+        backdrop-filter: blur(8px);
+      }
+      .btn-tab {
+        transition: all 0.25s ease;
+      }
+      .btn-tab:not(.active):hover {
+        background: rgba(255, 107, 53, 0.15);
+        border-color: #ff6b35;
+        color: #fff;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  modal.style.display = 'flex';
+  setTimeout(() => modal.classList.add('active'), 10);
+  
+  if (typeof mermaid === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';
+    script.onload = () => {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'dark',
+        securityLevel: 'loose'
+      });
+      window.renderMermaidDiagram();
+    };
+    document.head.appendChild(script);
+  } else {
+    window.renderMermaidDiagram();
+  }
+};
+
+window.closeMermaidModal = function() {
+  const modal = document.getElementById('admin-mermaid-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    setTimeout(() => modal.style.display = 'none', 300);
+  }
+};
+
+window.switchMermaidView = function(view) {
+  if (currentMermaidView === view) return;
+  currentMermaidView = view;
+  
+  const buttons = {
+    simple: document.getElementById('mermaid-btn-simple'),
+    detailed: document.getElementById('mermaid-btn-detailed'),
+    patterns: document.getElementById('mermaid-btn-patterns'),
+    solid: document.getElementById('mermaid-btn-solid'),
+    platforms: document.getElementById('mermaid-btn-platforms')
+  };
+  
+  // Reset all buttons
+  Object.values(buttons).forEach(btn => {
+    if (btn) {
+      btn.className = 'btn-tab';
+      btn.style.background = 'transparent';
+      btn.style.color = '#b0b0c0';
+      btn.style.border = '1.5px solid rgba(255,255,255,0.15)';
+    }
+  });
+  
+  // Set active button
+  if (buttons[view]) {
+    buttons[view].className = 'btn-tab active';
+    buttons[view].style.background = 'linear-gradient(135deg, #ff6b35, #ff8c5a)';
+    buttons[view].style.color = 'white';
+    buttons[view].style.border = 'none';
+  }
+  
+  window.renderMermaidDiagram();
+};
+
+window.renderMermaidDiagram = function() {
+  const container = document.querySelector('.mermaid-container');
+  if (!container) return;
+  
+  let code = '';
+  if (currentMermaidView === 'simple') {
+    code = `
+      graph LR
+        Client["หน้าเว็บ (Frontend)"] -->|ร้องขอ API| Server["เซิร์ฟเวอร์ (Backend)"]
+        Server --> DB[(ฐานข้อมูล Neon PostgreSQL)]
+        
+        style Client fill:#1f2937,stroke:#ff6b35,stroke-width:2px,color:#fff
+        style Server fill:#1f2937,stroke:#ff6b35,stroke-width:2px,color:#fff
+        style DB fill:#111827,stroke:#2ec4b6,stroke-width:2px,color:#fff
+    `;
+  } else if (currentMermaidView === 'detailed') {
+    code = `
+      graph TD
+        subgraph Client ["Client Layer (Frontend)"]
+          Web["Web Browser (HTML/JS/CSS)"]
+          Mobile["Mobile Web Browser"]
+        end
+
+        subgraph Gateway ["Routing / Middleware"]
+          Route["Express.js Routers"]
+          AuthMid["Auth Middleware (JWT Check)"]
+        end
+
+        subgraph Controller ["Backend Controller Modules"]
+          AuthCtrl["Auth Controller (Register/Login/Profile)"]
+          ProdCtrl["Product Controller (Fetch Products)"]
+        end
+
+        subgraph Database ["Data Layer"]
+          DB[(Neon PostgreSQL Cloud DB)]
+        end
+
+        subgraph External ["External Services"]
+          PG["Mock Payment Gateway"]
+        end
+
+        Web -->|HTTP Requests| Route
+        Mobile -->|HTTP Requests| Route
+        Route --> AuthMid
+        AuthMid --> AuthCtrl
+        Route --> ProdCtrl
+        AuthCtrl --> DB
+        ProdCtrl --> DB
+        Route --> PG
+        
+        style Web fill:#1f2937,stroke:#3b82f6,stroke-width:1.5px,color:#fff
+        style Mobile fill:#1f2937,stroke:#3b82f6,stroke-width:1.5px,color:#fff
+        style Route fill:#1f2937,stroke:#ff6b35,stroke-width:1.5px,color:#fff
+        style AuthMid fill:#1f2937,stroke:#ff6b35,stroke-width:1.5px,color:#fff
+        style AuthCtrl fill:#1f2937,stroke:#eab308,stroke-width:1.5px,color:#fff
+        style ProdCtrl fill:#1f2937,stroke:#eab308,stroke-width:1.5px,color:#fff
+        style DB fill:#111827,stroke:#2ec4b6,stroke-width:2px,color:#fff
+        style PG fill:#111827,stroke:#a855f7,stroke-width:1.5px,color:#fff
+    `;
+  } else if (currentMermaidView === 'patterns') {
+    code = `
+      graph LR
+        subgraph Patterns ["Platform Architecture Patterns"]
+          Mono["<b>Monolithic</b><br/>Single Application<br/>Easy to Deploy<br/>Hard to Scale"]
+          Micro["<b>Microservices</b><br/>Independent Services<br/>Better Scalability<br/>Complex Management"]
+          Server["<b>Serverless</b><br/>Function-based<br/>Auto Scaling<br/>Lower Cost"]
+          Event["<b>Event-Driven</b><br/>Event Producers<br/>Event Consumers<br/>Async Processing"]
+        end
+        
+        style Mono fill:#1f2937,stroke:#ff6b35,stroke-width:2px,color:#fff
+        style Micro fill:#1f2937,stroke:#3b82f6,stroke-width:2px,color:#fff
+        style Server fill:#1f2937,stroke:#eab308,stroke-width:2px,color:#fff
+        style Event fill:#1f2937,stroke:#2ec4b6,stroke-width:2px,color:#fff
+    `;
+  } else if (currentMermaidView === 'solid') {
+    code = `
+      graph TD
+        SOLID["<b>SOLID Principles</b>"]
+        S["<b>S</b>ingle Responsibility<br/>One class, One responsibility"]
+        O["<b>O</b>pen-Closed<br/>Open for extension<br/>Closed for modification"]
+        L["<b>L</b>iskov Substitution<br/>Subtypes can replace supertypes"]
+        I["<b>I</b>nterface Segregation<br/>Specific interfaces for clients"]
+        D["<b>D</b>ependency Inversion<br/>Depend on abstractions"]
+        
+        SOLID --> S
+        SOLID --> O
+        SOLID --> L
+        SOLID --> I
+        SOLID --> D
+        
+        style SOLID fill:#111827,stroke:#ff6b35,stroke-width:2px,color:#fff,font-size:16px
+        style S fill:#1f2937,stroke:#ff6b35,stroke-width:1.5px,color:#fff
+        style O fill:#1f2937,stroke:#3b82f6,stroke-width:1.5px,color:#fff
+        style L fill:#1f2937,stroke:#eab308,stroke-width:1.5px,color:#fff
+        style I fill:#1f2937,stroke:#2ec4b6,stroke-width:1.5px,color:#fff
+        style D fill:#1f2937,stroke:#a855f7,stroke-width:1.5px,color:#fff
+    `;
+  } else if (currentMermaidView === 'platforms') {
+    code = `
+      graph TD
+        Platforms["<b>Platform Types</b>"]
+        
+        Cloud["<b>Cloud Platforms</b><br/>AWS, Azure, GCP<br/>Infrastructure as a Service<br/>Scalable & Reliable"]
+        Web["<b>Web Platforms</b><br/>HTML/CSS/JavaScript<br/>Browser-based<br/>Cross-device access"]
+        Mobile["<b>Mobile Platforms</b><br/>iOS, Android<br/>Native & Cross-platform<br/>On-device Processing"]
+        Social["<b>Social Media Platforms</b><br/>Facebook, Twitter, Instagram<br/>User-generated Content<br/>Social Networking"]
+        
+        Platforms --> Cloud
+        Platforms --> Web
+        Platforms --> Mobile
+        Platforms --> Social
+        
+        style Platforms fill:#111827,stroke:#ff6b35,stroke-width:2px,color:#fff,font-size:16px
+        style Cloud fill:#1f2937,stroke:#ff6b35,stroke-width:1.5px,color:#fff
+        style Web fill:#1f2937,stroke:#3b82f6,stroke-width:1.5px,color:#fff
+        style Mobile fill:#1f2937,stroke:#eab308,stroke-width:1.5px,color:#fff
+        style Social fill:#1f2937,stroke:#2ec4b6,stroke-width:1.5px,color:#fff
+    `;
+  }
+  
+  container.innerHTML = '<div class="mermaid" id="mermaid-rendered-graph" style="width: 100%; text-align: center;">' + code + '</div>';
+  
+  if (typeof mermaid !== 'undefined') {
+    try {
+      mermaid.run({
+        nodes: [document.getElementById('mermaid-rendered-graph')]
+      });
+    } catch (e) {
+      console.error("Mermaid render error:", e);
+    }
+  }
+};
