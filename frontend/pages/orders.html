@@ -17,7 +17,31 @@
     .orders-header h1 {
       font-size: 28px;
       color: var(--color-text-primary);
-      margin-bottom: 8px;
+      margin-bottom: 0;
+    }
+    .back-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      border: 2px solid var(--color-accent-primary);
+      background: rgba(255, 107, 53, 0.05);
+      color: var(--color-accent-primary);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .back-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+    .back-btn:hover {
+      background: var(--color-accent-primary);
+      color: #fff;
+      transform: translateX(-4px);
+      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
     }
     .order-card {
       background: var(--color-bg-card);
@@ -147,8 +171,16 @@
   <!-- Orders Section -->
   <main class="orders-container">
     <div class="orders-header">
-      <h1>รายการสั่งซื้อของฉัน</h1>
-      <p style="color: var(--color-text-secondary);">ดูรายละเอียดการสั่งซื้อและสถานะการจัดส่ง</p>
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 8px;">
+        <a href="../index.html" class="back-btn" aria-label="กลับไปหน้าหลัก">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </a>
+        <h1>รายการสั่งซื้อของฉัน</h1>
+      </div>
+      <p style="color: var(--color-text-secondary); margin-left: 56px;">ดูรายละเอียดการสั่งซื้อและสถานะการจัดส่ง</p>
     </div>
 
     <div id="ordersContent">
