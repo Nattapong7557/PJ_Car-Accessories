@@ -53,7 +53,7 @@ function addToCart(productId, quantity = 1, productOverride = null) {
   const product = productOverride || products.find(p => Number(p.id) === normalizedId);
   if (!product) return;
   
-  const existing = cart.find(item => String(item.id) === String(productId));
+  const existing = cart.find(item => item.id === productId);
   if (existing) {
     existing.quantity += quantity;
   } else {
@@ -65,12 +65,12 @@ function addToCart(productId, quantity = 1, productOverride = null) {
 }
 
 function removeFromCart(productId) {
-  cart = cart.filter(item => String(item.id) !== String(productId));
+  cart = cart.filter(item => item.id !== productId);
   saveCart();
 }
 
 function updateCartQuantity(productId, quantity) {
-  const item = cart.find(i => String(i.id) === String(productId));
+  const item = cart.find(i => i.id === productId);
   if (item) {
     item.quantity = Math.max(1, quantity);
     saveCart();
@@ -544,6 +544,13 @@ function showUserMenu(e) {
       <div class="user-menu__email">${user.email}</div>
     </div>
     <div class="user-menu__divider"></div>
+    <a href="pages/profile.html" class="user-menu__item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      แก้ไขโปรไฟล์
+    </a>
     <a href="pages/cart.html" class="user-menu__item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="9" cy="21" r="1"/>

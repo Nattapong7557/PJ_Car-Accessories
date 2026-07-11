@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="แก้ไขโปรไฟล์ - AutoParts Pro">
+  <title>แก้ไขโปรไฟล์ - AutoParts Pro</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--color-bg-secondary);
+      padding: 40px 20px;
+    }
+
+    .profile-card {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      background: var(--color-bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 44px 40px 40px;
+    }
+
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 56px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--color-accent-gradient);
+    }
+
+    .profile-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .profile-header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      margin: 0 0 8px 0;
+    }
+
+    .profile-header p {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .profile-form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 14px 16px;
+      background-color: var(--color-bg-input);
+      border: 1.5px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 15px;
+      color: var(--color-text-primary);
+      transition: border-color var(--transition-fast), background-color var(--transition-fast);
+      resize: vertical;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--color-text-muted);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--color-accent-primary);
+      background-color: var(--color-bg-card);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.12);
+    }
+
+    .form-group input.error,
+    .form-group textarea.error {
+      border-color: var(--color-red);
+    }
+
+    .field-hint {
+      display: block;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: 6px;
+    }
+
+    .field-error {
+      display: block;
+      font-size: 12px;
+      color: var(--color-red);
+      min-height: 16px;
+      margin-top: 6px;
+    }
+
+    .btn-save {
+      margin-top: 6px;
+      padding: 15px;
+      border: none;
+      border-radius: 999px;
+      background: var(--color-accent-gradient);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .btn-save:hover:not(:disabled) {
+      opacity: 0.92;
+    }
+
+    .btn-save:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .alert-message {
+      display: none;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .alert-message.show {
+      display: block;
+    }
+
+    .alert-message.error {
+      background-color: rgba(230, 57, 70, 0.1);
+      color: var(--color-red);
+    }
+
+    .alert-message.success {
+      background-color: rgba(46, 196, 182, 0.12);
+      color: #1f8f83;
+    }
+
+    .profile-footer {
+      margin-top: 26px;
+      padding-top: 20px;
+      border-top: 1px solid var(--color-border);
+      text-align: center;
+    }
+
+    .profile-footer a {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+    }
+
+    .profile-footer a:hover {
+      color: var(--color-accent-primary);
+    }
+
+    @media (max-width: 480px) {
+      .profile-card {
+        padding: 36px 24px 32px;
+      }
+
+      .profile-header h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-card">
+    <div class="profile-header">
+      <h1>แก้ไขโปรไฟล์</h1>
+      <p>อัปเดตข้อมูลส่วนตัวของคุณ</p>
+    </div>
+
+    <form id="profileForm" class="profile-form" novalidate>
+      <div class="form-group">
+        <label for="name">ชื่อ</label>
+        <input type="text" id="name" name="name" placeholder="กรุณากรอกชื่อของคุณ" required>
+        <span class="field-error" id="nameError"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="email">อีเมล</label>
+        <input type="email" id="email" name="email" placeholder="example@email.com" required>
+        <span class="field-hint">หากเปลี่ยนอีเมล กรุณาใช้อีเมลใหม่ในการเข้าสู่ระบบครั้งถัดไป</span>
+        <span class="field-error" id="emailError"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">เบอร์โทรศัพท์</label>
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          placeholder="0812345678"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          maxlength="10"
+          autocomplete="tel"
+        >
+        <span class="field-error" id="phoneError"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="address">ที่อยู่การจัดส่ง</label>
+        <textarea
+          id="address"
+          name="address"
+          rows="2"
+          placeholder="บ้านเลขที่ ถนน ตำบล/แขวง อำเภอ/เขต จังหวัด รหัสไปรษณีย์"
+        ></textarea>
+        <span class="field-error" id="addressError"></span>
+      </div>
+
+      <div class="alert-message error" id="errorAlert"></div>
+      <div class="alert-message success" id="successAlert"></div>
+
+      <button type="submit" class="btn-save" id="saveBtn">บันทึกการเปลี่ยนแปลง</button>
+    </form>
+
+    <div class="profile-footer">
+      <a href="../index.html">กลับไปหน้าแรก</a>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!isUserLoggedIn()) {
+        window.location.href = 'login.html';
+        return;
+      }
+      loadProfile();
+    });
+
+    // จำกัดให้เบอร์โทรศัพท์กรอกได้เฉพาะตัวเลข และไม่เกิน 10 หลัก
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('input', () => {
+      phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+    });
+
+    function setFieldError(fieldId, message) {
+      const input = document.getElementById(fieldId);
+      const errorEl = document.getElementById(fieldId + 'Error');
+      input.classList.toggle('error', !!message);
+      errorEl.textContent = message || '';
+    }
+
+    function showAlert(type, message) {
+      const errorEl = document.getElementById('errorAlert');
+      const successEl = document.getElementById('successAlert');
+      errorEl.classList.remove('show');
+      successEl.classList.remove('show');
+
+      const target = type === 'success' ? successEl : errorEl;
+      target.textContent = message;
+      target.classList.add('show');
+    }
+
+    async function loadProfile() {
+      try {
+        const token = getAuthToken();
+        const response = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'โหลดข้อมูลไม่สำเร็จ');
+        }
+
+        const user = data.data;
+        document.getElementById('name').value = user.name || '';
+        document.getElementById('email').value = user.email || '';
+        document.getElementById('phone').value = user.phone || '';
+        document.getElementById('address').value = (user.address && user.address.full) || '';
+      } catch (error) {
+        console.error('Load profile error:', error);
+        showAlert('error', error.message || 'ไม่สามารถโหลดข้อมูลโปรไฟล์ได้');
+      }
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      document.getElementById('errorAlert').classList.remove('show');
+      document.getElementById('successAlert').classList.remove('show');
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+
+      let hasError = false;
+
+      if (!name || name.length < 3) {
+        setFieldError('name', 'กรุณากรอกชื่อ (อย่างน้อย 3 ตัวอักษร)');
+        hasError = true;
+      } else {
+        setFieldError('name', '');
+      }
+
+      if (!validateEmail(email)) {
+        setFieldError('email', 'กรุณากรอกอีเมลให้ถูกต้อง');
+        hasError = true;
+      } else {
+        setFieldError('email', '');
+      }
+
+      if (phone && !/^[0-9]{1,10}$/.test(phone)) {
+        setFieldError('phone', 'กรุณากรอกเบอร์โทรศัพท์เป็นตัวเลข ไม่เกิน 10 หลัก');
+        hasError = true;
+      } else {
+        setFieldError('phone', '');
+      }
+
+      if (hasError) return;
+
+      const saveBtn = document.getElementById('saveBtn');
+      const originalText = saveBtn.textContent;
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'กำลังบันทึก...';
+
+      try {
+        const token = getAuthToken();
+        const response = await fetch('/api/auth/profile', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            phone: phone || null,
+            address: { full: address }
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'บันทึกข้อมูลไม่สำเร็จ');
+        }
+
+        saveCurrentUser({
+          id: data.data._id || data.data.id,
+          name: data.data.name,
+          email: data.data.email,
+          role: data.data.role
+        });
+
+        showAlert('success', data.message || 'บันทึกการเปลี่ยนแปลงสำเร็จ');
+      } catch (error) {
+        console.error('Update profile error:', error);
+        showAlert('error', error.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = originalText;
+      }
+    });
+  </script>
+</body>
+</html>

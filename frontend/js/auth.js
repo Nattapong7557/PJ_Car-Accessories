@@ -325,3 +325,71 @@ function logout() {
   clearAuthToken();
   window.location.href = '../index.html';
 }
+
+// ============================================
+// Profile Update
+// ============================================
+
+async function handleProfileUpdate(e) {
+  e.preventDefault();
+  clearAllErrors();
+
+  const form = document.getElementById('profileForm');
+  const name = form.elements['name'].value.trim();
+  const phone = form.elements['phone'].value.trim();
+
+  // Validation
+  let hasError = false;
+
+  if (!name) {
+    showFieldError('name', 'กรุณากรอกชื่อ');
+    hasError = true;
+  } else {
+    clearFieldError('name');
+  }
+
+  if (phone && !validatePhone(phone)) {
+    showFieldError('phone', 'กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง');
+    hasError = true;
+  } else {
+    clearFieldError('phone');
+  }
+
+  if (hasError) return;
+
+  setLoading('profileForm', true);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getAuthToken()}`
+      },
+      body: JSON.stringify({ name, phone })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'บันทึกข้อมูลล้มเหลว');
+    }
+
+    // Refresh the cached user (name/email shown in the header dropdown)
+    const currentUser = getCurrentUser() || {};
+    saveCurrentUser({
+      ...currentUser,
+      id: data.data._id || data.data.id || currentUser.id,
+      name: data.data.name,
+      email: data.data.email,
+      phone: data.data.phone
+    });
+
+    showSuccessAlert('successAlert', 'บันทึกข้อมูลสำเร็จ');
+  } catch (error) {
+    console.error('Profile update error:', error);
+    showErrorAlert('errorAlert', error.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+  } finally {
+    setLoading('profileForm', false);
+  }
+}

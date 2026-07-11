@@ -138,11 +138,38 @@ const getMe = async (req, res, next) => {
 // @access  Private
 const updateProfile = async (req, res, next) => {
   try {
-    const { name, phone, address } = req.body;
+    const { name, email, phone, address } = req.body;
+
+    // ถ้ามีการเปลี่ยนอีเมล ต้องตรวจสอบรูปแบบและความซ้ำซ้อนก่อน
+    if (email && email !== req.user.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          success: false,
+          message: 'กรุณากรอกอีเมลให้ถูกต้อง'
+        });
+      }
+
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: 'อีเมลนี้ถูกใช้งานแล้ว'
+        });
+      }
+    }
+
+    // เบอร์โทรศัพท์ (ถ้ากรอก) ต้องเป็นตัวเลขล้วน ไม่เกิน 10 หลัก
+    if (phone && !/^[0-9]{1,10}$/.test(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: 'เบอร์โทรศัพท์ต้องเป็นตัวเลขไม่เกิน 10 หลัก'
+      });
+    }
 
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { name, phone, address },
+      { name, email, phone, address },
       { new: true, runValidators: true }
     );
 
