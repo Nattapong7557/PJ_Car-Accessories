@@ -393,3 +393,37 @@ async function handleProfileUpdate(e) {
     setLoading('profileForm', false);
   }
 }
+
+// ============================================
+// Terms Modal Logic
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+  const termsCheckbox = document.getElementById('terms');
+  const termsModal = document.getElementById('termsModal');
+  const btnAccept = document.getElementById('btnAcceptTerms');
+  const btnDecline = document.getElementById('btnDeclineTerms');
+
+  if (termsCheckbox && termsModal) {
+    // Prevent default checking and show modal instead
+    termsCheckbox.addEventListener('click', (e) => {
+      // If it's already checked and they click it, let them uncheck it
+      if (!termsCheckbox.checked) {
+        return; // It's unchecking, allow it
+      }
+      
+      // If they are trying to check it, stop it and show modal
+      e.preventDefault();
+      termsModal.classList.add('active');
+    });
+
+    btnAccept.addEventListener('click', () => {
+      termsCheckbox.checked = true;
+      termsModal.classList.remove('active');
+    });
+
+    btnDecline.addEventListener('click', () => {
+      termsCheckbox.checked = false;
+      termsModal.classList.remove('active');
+    });
+  }
+});
