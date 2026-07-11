@@ -1,0 +1,10 @@
+{
+  "name": "pj-car-accessories",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:prod": "cd backend && npm install",
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev"
+  }
+}
