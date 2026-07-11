@@ -69,6 +69,9 @@ const attachProductMethods = (product) => {
     const partBrandId = await getPartBrandId(product.brand || product.partBrand || null);
     const carBrandId = await getCarBrandId(product.carBrand || product.car_brand || null);
 
+    // Auto-update is_active based on stock
+    product.isActive = Number(product.stock) > 0;
+
     const { rows } = await pool.query(
       `UPDATE parts SET name=$1, description=$2, price=$3, original_price=$4, image=$5, images=$6, category=$7, badge=$8, rating=$9, reviews=$10, stock=$11, is_active=$12, part_brand_id=$13, car_brand_id=$14, updated_at=NOW() WHERE id=$15 RETURNING *`,
       [
@@ -191,6 +194,9 @@ const Product = {
     const partBrandId = await getPartBrandId(data.brand || data.partBrand);
     const carBrandId = await getCarBrandId(data.carBrand);
 
+    const stock = Number(data.stock ?? 0);
+    const isActive = stock > 0;
+
     const { rows } = await pool.query(
       `INSERT INTO parts (name, description, price, original_price, image, images, category, badge, rating, reviews, stock, is_active, part_brand_id, car_brand_id, created_at, updated_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW(), NOW()) RETURNING *`,
@@ -205,8 +211,8 @@ const Product = {
         data.badge ?? null,
         data.rating ?? 0,
         data.reviews ?? 0,
-        data.stock ?? 0,
-        data.isActive !== undefined ? data.isActive : true,
+        stock,
+        isActive,
         partBrandId,
         carBrandId
       ]

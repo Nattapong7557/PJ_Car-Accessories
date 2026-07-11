@@ -216,10 +216,10 @@
         completed: 'สำเร็จ'
       };
 
-      content.innerHTML = orders.map(order => `
+      content.innerHTML = orders.map((order, index) => `
         <div class="order-card">
           <div class="order-header">
-            <div class="order-id">คำสั่งซื้อ #${order.id || order._id}</div>
+            <div class="order-id">คำสั่งซื้อ #${orders.length - index}</div>
             <span class="order-status ${order.status}">${statusLabels[order.status] || order.status}</span>
           </div>
           <div class="order-info">
