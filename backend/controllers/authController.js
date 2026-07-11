@@ -49,6 +49,7 @@ const register = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        roleId: user.roleId,
         token
       },
       message: 'สมัครสมาชิกสำเร็จ'
@@ -109,6 +110,7 @@ const login = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        roleId: user.roleId,
         token
       },
       message: 'เข้าสู่ระบบสำเร็จ'
