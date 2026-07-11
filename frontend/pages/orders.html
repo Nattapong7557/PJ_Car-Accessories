@@ -248,10 +248,13 @@
         completed: 'สำเร็จ'
       };
 
-      content.innerHTML = orders.map((order, index) => `
+      // Reverse orders so that oldest (#1) comes first in display list
+      const sortedOrders = [...orders].reverse();
+
+      content.innerHTML = sortedOrders.map((order, index) => `
         <div class="order-card">
           <div class="order-header">
-            <div class="order-id">คำสั่งซื้อ #${orders.length - index}</div>
+            <div class="order-id">สั่งซื้อสำเร็จ #${index + 1}</div>
             <span class="order-status ${order.status}">${statusLabels[order.status] || order.status}</span>
           </div>
           <div class="order-info">
