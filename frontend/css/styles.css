@@ -565,7 +565,7 @@ input {
   overflow-x: auto;
   scroll-behavior: smooth;
   scroll-snap-type: x proximity;
-  padding: var(--space-sm) 2px var(--space-md);
+  padding: 16px 8px 20px;
   cursor: grab;
   -ms-overflow-style: none;
   scrollbar-width: none;
