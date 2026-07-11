@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const { pool } = require('../config/db');
 
 // @desc    ดึงสินค้าทั้งหมด (พร้อม filter, search, pagination)
 // @route   GET /api/products
@@ -53,8 +54,8 @@ const getProducts = async (req, res, next) => {
     }
 
     // Pagination
-    const pageNum = Math.max(1, parseInt(page));
-    const limitNum = Math.min(50, Math.max(1, parseInt(limit)));
+    const pageNum = Math.max(1, parseInt(page) || 1);
+    const limitNum = limit === 'all' ? 1000 : Math.min(1000, Math.max(1, parseInt(limit) || 20));
     const skip = (pageNum - 1) * limitNum;
 
     // Execute query
@@ -173,10 +174,79 @@ const deleteProduct = async (req, res, next) => {
   }
 };
 
+// @desc    ดึงรีวิวของสินค้า
+// @route   GET /api/products/:id/reviews
+// @access  Public
+const getProductReviews = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { rows } = await pool.query(
+      'SELECT id, user_name, rating, comment, created_at FROM product_reviews WHERE part_id = $1 ORDER BY created_at DESC',
+      [id]
+    );
+
+    res.status(200).json({
+      success: true,
+      count: rows.length,
+      data: rows
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    เพิ่มรีวิวสินค้า
+// @route   POST /api/products/:id/reviews
+// @access  Public (should ideally be Private)
+const addProductReview = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { user_name, rating, comment } = req.body;
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ success: false, message: 'กรุณาให้คะแนนระหว่าง 1 ถึง 5 ดาว' });
+    }
+
+    // Insert review
+    await pool.query(
+      'INSERT INTO product_reviews (part_id, user_name, rating, comment) VALUES ($1, $2, $3, $4)',
+      [id, user_name || 'Anonymous', rating, comment]
+    );
+
+    // Calculate new average and total reviews
+    const { rows } = await pool.query(
+      'SELECT COUNT(*) as total_reviews, AVG(rating) as avg_rating FROM product_reviews WHERE part_id = $1',
+      [id]
+    );
+
+    const totalReviews = parseInt(rows[0].total_reviews, 10);
+    const avgRating = parseFloat(rows[0].avg_rating).toFixed(1);
+
+    // Update parts table
+    await pool.query(
+      'UPDATE parts SET rating = $1, reviews = $2 WHERE id = $3',
+      [avgRating, totalReviews, id]
+    );
+
+    res.status(201).json({
+      success: true,
+      message: 'เพิ่มรีวิวสำเร็จ',
+      data: {
+        newRating: avgRating,
+        newReviewsCount: totalReviews
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getProducts,
   getProductById,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getProductReviews,
+  addProductReview
 };

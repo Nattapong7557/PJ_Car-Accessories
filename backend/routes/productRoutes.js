@@ -5,13 +5,17 @@ const {
   getProductById,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getProductReviews,
+  addProductReview
 } = require('../controllers/productController');
 const { protect, adminOnly } = require('../middleware/auth');
 
 // Public routes
 router.get('/', getProducts);
 router.get('/:id', getProductById);
+router.get('/:id/reviews', getProductReviews);
+router.post('/:id/reviews', addProductReview);
 
 // Admin routes (ต้อง login + เป็น admin)
 router.post('/', protect, adminOnly, createProduct);

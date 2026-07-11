@@ -86,6 +86,14 @@
   <main>
     <section class="product-detail" id="product-detail-section">
       <div class="container">
+        <!-- Back Button -->
+        <a href="../index.html" class="btn-back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          ย้อนกลับไปหน้าหลัก
+        </a>
+
         <!-- Breadcrumb -->
         <div class="product-detail__breadcrumb" id="breadcrumb">
           <a href="../index.html">หน้าแรก</a>
@@ -145,6 +153,52 @@
                 สั่งซื้อเลย
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================
+         REVIEWS SECTION
+         ============================================ -->
+    <section class="product-reviews" id="product-reviews-section">
+      <div class="container">
+        <div class="reviews-container">
+          <!-- Reviews List Header -->
+          <div class="reviews-header">
+            <h2 class="reviews-title">รีวิวจากลูกค้า <span id="reviews-count-badge" class="reviews-count-badge">0</span></h2>
+          </div>
+
+          <!-- Reviews List -->
+          <div class="reviews-list" id="reviews-list">
+            <div class="reviews-loading">กำลังโหลดรีวิว...</div>
+          </div>
+          
+          <!-- Show More Button -->
+          <button class="reviews-show-more" id="reviews-show-more" onclick="showAllReviews()" style="display: none;">
+            ดูรีวิวทั้งหมด
+          </button>
+
+          <!-- Add Review Form -->
+          <div class="review-form-container">
+            <h3 class="review-form-title">เขียนรีวิวของคุณ</h3>
+            <form id="review-form" class="review-form" onsubmit="submitReview(event)">
+              <div class="form-group">
+                <label>คะแนน (ดาว)</label>
+                <div class="star-rating-input" id="star-rating-input">
+                  <input type="radio" id="star5" name="rating" value="5" required /><label for="star5" title="5 ดาว">★</label>
+                  <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 ดาว">★</label>
+                  <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 ดาว">★</label>
+                  <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 ดาว">★</label>
+                  <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 ดาว">★</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="review-comment">ประสบการณ์การใช้งานของคุณ (ไม่บังคับ)</label>
+                <textarea id="review-comment" class="form-input form-textarea" placeholder="แบ่งปันความคิดเห็นเกี่ยวกับคุณภาพสินค้า การจัดส่ง หรือการบริการ..." rows="5"></textarea>
+              </div>
+              <button type="submit" class="review-submit-btn">ส่งรีวิว</button>
+            </form>
           </div>
         </div>
       </div>
@@ -270,9 +324,139 @@
       }, 500);
     }
 
+    // ==========================================
+    // REVIEWS LOGIC
+    // ==========================================
+    let allReviews = [];
+    let showingAllReviews = false;
+
+    async function loadReviews() {
+      const id = getProductIdFromURL();
+      try {
+        const res = await fetch(`/api/products/${id}/reviews`);
+        const data = await res.json();
+        if (data.success) {
+          allReviews = data.data;
+          renderReviews();
+          document.getElementById('reviews-count-badge').textContent = data.count;
+        }
+      } catch (error) {
+        console.error('Failed to load reviews:', error);
+        document.getElementById('reviews-list').innerHTML = '<div class="reviews-empty">ไม่สามารถโหลดรีวิวได้</div>';
+      }
+    }
+
+    function renderReviews() {
+      const listEl = document.getElementById('reviews-list');
+      const showMoreBtn = document.getElementById('reviews-show-more');
+      
+      if (!allReviews || allReviews.length === 0) {
+        listEl.innerHTML = '<div class="reviews-empty">ยังไม่มีรีวิวสำหรับสินค้านี้ มาเป็นคนแรกที่รีวิวกันเถอะ!</div>';
+        showMoreBtn.style.display = 'none';
+        return;
+      }
+
+      const displayReviews = showingAllReviews ? allReviews : allReviews.slice(0, 3);
+      
+      listEl.innerHTML = displayReviews.map(review => {
+        const stars = Array(5).fill('').map((_, i) => {
+          const filled = i < Math.floor(Number(review.rating));
+          return `<span class="review-star ${filled ? 'filled' : ''}">★</span>`;
+        }).join('');
+        
+        const date = new Date(review.created_at).toLocaleDateString('th-TH', {
+          year: 'numeric', month: 'short', day: 'numeric'
+        });
+
+        return `
+          <div class="review-card">
+            <div class="review-card__header">
+              <div class="review-card__avatar">${review.user_name.charAt(0).toUpperCase()}</div>
+              <div class="review-card__info">
+                <h4 class="review-card__name">${review.user_name}</h4>
+                <div class="review-card__date">${date}</div>
+              </div>
+              <div class="review-card__rating">${stars}</div>
+            </div>
+            ${review.comment ? `<p class="review-card__comment">${review.comment}</p>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      if (allReviews.length > 3 && !showingAllReviews) {
+        showMoreBtn.style.display = 'block';
+      } else {
+        showMoreBtn.style.display = 'none';
+      }
+    }
+
+    function showAllReviews() {
+      showingAllReviews = true;
+      renderReviews();
+    }
+
+    async function submitReview(e) {
+      e.preventDefault();
+      
+      const id = getProductIdFromURL();
+      const ratingInput = document.querySelector('input[name="rating"]:checked');
+      if (!ratingInput) {
+        alert('กรุณาให้คะแนนดาว');
+        return;
+      }
+      
+      const rating = parseInt(ratingInput.value);
+      
+      // Fetch user name from localStorage
+      let user_name = "สมาชิก AutoParts Pro";
+      try {
+        const storedUser = localStorage.getItem('currentUser');
+        if (storedUser) {
+          const userObj = JSON.parse(storedUser);
+          if (userObj && userObj.name) {
+            user_name = userObj.name;
+          }
+        }
+      } catch (err) {
+        console.error('Error parsing user data:', err);
+      }
+      
+      const comment = document.getElementById('review-comment').value;
+
+      const btn = document.querySelector('.review-submit-btn');
+      btn.textContent = 'กำลังส่ง...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`/api/products/${id}/reviews`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_name, rating, comment })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+          showNotification('ขอบคุณสำหรับรีวิวครับ!');
+          document.getElementById('review-form').reset();
+          // Reload product details to update average rating and reload reviews
+          loadProduct();
+          loadReviews();
+        } else {
+          alert(data.message || 'เกิดข้อผิดพลาดในการส่งรีวิว');
+        }
+      } catch (error) {
+        console.error('Failed to submit review:', error);
+        alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+      } finally {
+        btn.textContent = 'ส่งรีวิว';
+        btn.disabled = false;
+      }
+    }
+
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
       loadProduct();
+      loadReviews();
       updateCartCount();
       
       // Back to top
