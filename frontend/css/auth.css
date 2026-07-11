@@ -409,8 +409,8 @@ body.auth-page {
 
 .auth-back-button {
   position: absolute;
-  top: 9rem;
-  left: 9rem;
+  top: 14rem;
+  left: 32rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
