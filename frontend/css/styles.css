@@ -205,11 +205,13 @@ input {
   align-items: center;
   gap: var(--space-sm);
   flex-shrink: 0;
+  
 }
 
 .header__logo img {
   height: 50px;
   width: auto;
+  border-radius: 6px;
 }
 
 .header__logo-text {
@@ -545,7 +547,7 @@ input {
    Car Brand Logo Filter
    ============================================ */
 .brands {
-  padding: var(--space-lg) 0 0;
+  padding: var(--space-xl) 0 var(--space-md);
 }
 
 .brands__wrapper {
@@ -559,11 +561,11 @@ input {
 .brands__track {
   display: flex;
   justify-content: center;
-  gap: var(--space-md);
+  gap: var(--space-xl);
   overflow-x: auto;
   scroll-behavior: smooth;
   scroll-snap-type: x proximity;
-  padding: var(--space-sm) 2px var(--space-md);
+  padding: 16px 16px 20px;
   cursor: grab;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -581,8 +583,8 @@ input {
 .brands__item {
   flex: 0 0 auto;
   scroll-snap-align: start;
-  width: 160px;
-  height: 110px;
+  width: 190px;
+  height: 130px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -590,7 +592,7 @@ input {
   border: 3px solid transparent;
   border-radius: var(--radius-lg);
   box-shadow: none;
-  padding: var(--space-sm);
+  padding: var(--space-md);
   transition: transform var(--transition-normal), border-color var(--transition-normal);
 }
 
@@ -606,8 +608,13 @@ input {
 }
 
 .brands__item.active {
-  border-color: #e02020;
+  border-color: var(--color-accent, #ff6b35);
+  background: rgba(255, 107, 53, 0.08);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 107, 53, 0.35), 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
+
 
 @media (max-width: 640px) {
   .brands__item {

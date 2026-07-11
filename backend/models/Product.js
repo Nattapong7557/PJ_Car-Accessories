@@ -112,8 +112,19 @@ const Product = {
       }
 
       if (query.category && query.category !== 'all') {
-        conditions.push(`p.category = $${values.length + 1}`);
-        values.push(query.category);
+        if (Array.isArray(query.category)) {
+          const placeholders = query.category.map((_, i) => `$${values.length + 1 + i}`);
+          conditions.push(`p.category IN (${placeholders.join(', ')})`);
+          values.push(...query.category);
+        } else {
+          conditions.push(`p.category = $${values.length + 1}`);
+          values.push(query.category);
+        }
+      }
+
+      if (query.carBrand) {
+        conditions.push(`(cb.slug = $${values.length + 1} OR cb.name ILIKE $${values.length + 2})`);
+        values.push(query.carBrand.toLowerCase(), query.carBrand);
       }
 
       if (query.$text && query.$text.$search) {
@@ -256,8 +267,19 @@ const Product = {
     }
 
     if (filter.category && filter.category !== 'all') {
-      conditions.push(`p.category = $${values.length + 1}`);
-      values.push(filter.category);
+      if (Array.isArray(filter.category)) {
+        const placeholders = filter.category.map((_, i) => `$${values.length + 1 + i}`);
+        conditions.push(`p.category IN (${placeholders.join(', ')})`);
+        values.push(...filter.category);
+      } else {
+        conditions.push(`p.category = $${values.length + 1}`);
+        values.push(filter.category);
+      }
+    }
+
+    if (filter.carBrand) {
+      conditions.push(`(cb.slug = $${values.length + 1} OR cb.name ILIKE $${values.length + 2})`);
+      values.push(filter.carBrand.toLowerCase(), filter.carBrand);
     }
 
     if (filter.$text && filter.$text.$search) {
