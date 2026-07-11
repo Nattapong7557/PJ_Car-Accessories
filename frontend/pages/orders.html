@@ -236,6 +236,18 @@
               <div>${order.items?.length || 0} ชิ้น</div>
             </div>
           </div>
+          <div class="order-items-list" style="margin-top: 20px; border-top: 1px dashed var(--color-border); padding-top: 16px;">
+            <div class="order-info-label" style="margin-bottom: 12px;">รายการสินค้า</div>
+            ${(order.items || []).map(item => `
+              <div class="order-item" style="display: flex; gap: 16px; margin-bottom: 12px; align-items: center;">
+                <img src="../${item.image}" alt="${item.name}" onerror="this.src='../assets/images/placeholder.jpg'" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid var(--color-border); background: #fff;">
+                <div>
+                  <div style="font-weight: 600; color: var(--color-text-primary); font-size: 0.95rem; margin-bottom: 4px;">${item.name}</div>
+                  <div style="font-size: 0.85rem; color: var(--color-text-secondary);">จำนวน: ${item.quantity} ชิ้น | ราคาต่อชิ้น: ฿${item.price}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
         </div>
       `).join('');
     }

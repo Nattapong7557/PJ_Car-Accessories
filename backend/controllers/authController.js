@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { pool } = require('../config/db');
 
 const sanitizeUser = (user) => {
   if (!user) return user;
@@ -172,6 +173,33 @@ const updateProfile = async (req, res, next) => {
       { name, email, phone, address },
       { new: true, runValidators: true }
     );
+
+    // Sync address with user_address table
+    let fullAddress = '';
+    if (typeof address === 'string') {
+      fullAddress = address;
+    } else if (address && typeof address === 'object') {
+      fullAddress = address.full || '';
+    }
+
+    if (fullAddress.trim()) {
+      const { rows: existingAddress } = await pool.query(
+        'SELECT id FROM user_address WHERE user_id = $1',
+        [req.user._id]
+      );
+
+      if (existingAddress.length > 0) {
+        await pool.query(
+          'UPDATE user_address SET full_address = $1, recipient_name = $2, phone = $3, updated_at = NOW() WHERE user_id = $4',
+          [fullAddress.trim(), name, phone || null, req.user._id]
+        );
+      } else {
+        await pool.query(
+          'INSERT INTO user_address (user_id, full_address, recipient_name, phone, is_default) VALUES ($1, $2, $3, $4, TRUE)',
+          [req.user._id, fullAddress.trim(), name, phone || null]
+        );
+      }
+    }
 
     res.status(200).json({
       success: true,

@@ -84,12 +84,12 @@ function addToCart(productId, quantity = 1, productOverride = null) {
 }
 
 function removeFromCart(productId) {
-  cart = cart.filter(item => item.id !== productId);
+  cart = cart.filter(item => String(item.id) !== String(productId));
   saveCart();
 }
 
 function updateCartQuantity(productId, quantity) {
-  const item = cart.find(i => i.id === productId);
+  const item = cart.find(i => String(i.id) === String(productId));
   if (item) {
     item.quantity = Math.max(1, quantity);
     saveCart();
@@ -225,6 +225,9 @@ function createProductCard(product) {
         <div class="product-card__rating">
           <div class="product-card__stars">${stars}</div>
           <span class="product-card__review-count">(${product.reviews})</span>
+        </div>
+        <div class="product-card__stock" style="font-size: 0.85rem; color: var(--color-text-secondary); margin-top: 8px;">
+          เหลือสินค้า: <span style="color: ${product.stock > 0 ? 'var(--color-accent-primary)' : 'var(--color-red)'}; font-weight: 600;">${product.stock || 0}</span> ชิ้น
         </div>
       </div>
     </div>
@@ -569,6 +572,9 @@ function updateAuthUI() {
   
   if (!loginBtn) return;
   
+  const isSubpage = window.location.pathname.includes('/pages/');
+  const pathPrefix = isSubpage ? '' : 'pages/';
+  
   if (isUserLoggedIn() && user) {
     // User is logged in
     loginBtn.innerHTML = `
@@ -588,7 +594,7 @@ function updateAuthUI() {
       </svg>
       <span>ลงชื่อเข้าใช้</span>
     `;
-    loginBtn.onclick = () => window.location.href = 'pages/login.html';
+    loginBtn.onclick = () => window.location.href = pathPrefix + 'login.html';
   }
 }
 
@@ -605,32 +611,28 @@ function showUserMenu(e) {
   const user = getCurrentUser();
   const menu = document.createElement('div');
   menu.className = 'user-menu';
+  
+  const isSubpage = window.location.pathname.includes('/pages/');
+  const pathPrefix = isSubpage ? '' : 'pages/';
+  
   menu.innerHTML = `
     <div class="user-menu__item user-menu__header">
       <div class="user-menu__name">${user.name}</div>
       <div class="user-menu__email">${user.email}</div>
     </div>
     <div class="user-menu__divider"></div>
-    <a href="pages/profile.html" class="user-menu__item">
+    <a href="${pathPrefix}profile.html" class="user-menu__item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
         <circle cx="12" cy="7" r="4"/>
       </svg>
       แก้ไขโปรไฟล์
     </a>
-    <a href="pages/cart.html" class="user-menu__item">
+    <a href="${pathPrefix}orders.html" class="user-menu__item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="9" cy="21" r="1"/>
-        <circle cx="20" cy="21" r="1"/>
-        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/>
       </svg>
-      ตะกร้าสินค้า
-    </a>
-    <a href="pages/orders.html" class="user-menu__item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 11H3v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-11h-6m0 0V7a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4m0 0l1 12m3 0l1-12"/>
-      </svg>
-      รายการสั่งซื้อ
+      ประวัติการสั่งซื้อ
     </a>
     <div class="user-menu__divider"></div>
     <button class="user-menu__item" onclick="logoutUser();">

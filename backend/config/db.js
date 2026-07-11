@@ -133,6 +133,19 @@ const createTables = async () => {
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS user_address (
+      id BIGSERIAL PRIMARY KEY,
+      user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
+      recipient_name VARCHAR(100),
+      phone VARCHAR(30),
+      full_address TEXT NOT NULL,
+      is_default BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
 };
 
 const connectDB = async () => {

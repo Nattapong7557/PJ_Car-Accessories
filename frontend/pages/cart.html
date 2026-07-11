@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
+
 <body>
   <!-- ============================================
        HEADER
@@ -27,17 +29,18 @@
 
         <button class="header__menu-toggle" id="menu-toggle" aria-label="เปิดเมนู">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 12h18M3 6h18M3 18h18"/>
+            <path d="M3 12h18M3 6h18M3 18h18" />
           </svg>
         </button>
 
         <div class="header__search">
           <form class="header__search-form" id="search-form" action="../index.html">
-            <input type="text" class="header__search-input" id="search-input" placeholder="ค้นหาอุปกรณ์แต่งรถ..." aria-label="ค้นหาสินค้า">
+            <input type="text" class="header__search-input" id="search-input" placeholder="ค้นหาอุปกรณ์แต่งรถ..."
+              aria-label="ค้นหาสินค้า">
             <button type="submit" class="header__search-btn" id="search-btn" aria-label="ค้นหา">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="M21 21l-4.35-4.35"/>
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
               </svg>
             </button>
           </form>
@@ -46,17 +49,17 @@
         <div class="header__actions">
           <a href="../index.html" class="header__action" id="home-link">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
             <span>หน้าหลัก</span>
           </a>
-          
+
           <a href="cart.html" class="header__action" id="cart-link" style="color: var(--color-accent-primary);">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="9" cy="21" r="1"/>
-              <circle cx="20" cy="21" r="1"/>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
             </svg>
             <span class="cart-count">(0)</span>
           </a>
@@ -86,10 +89,11 @@
     <section class="cart-page" id="cart-section">
       <div class="container">
         <h1 class="cart-page__title" id="cart-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 28px; height: 28px;">
-            <circle cx="9" cy="21" r="1"/>
-            <circle cx="20" cy="21" r="1"/>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            style="width: 28px; height: 28px;">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
           </svg>
           ตะกร้าสินค้า
         </h1>
@@ -122,6 +126,19 @@
             <div class="cart-summary__row cart-summary__row--total">
               <span>ยอดรวมทั้งสิ้น</span>
               <span id="total">฿0</span>
+            </div>
+            <div class="cart-summary__section" id="shipping-address-section"
+              style="margin: 20px 0 15px; padding-top: 15px; border-top: 1px solid var(--color-border); text-align: left;">
+              <h3
+                style="font-size: 14px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; color: var(--color-text-primary);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  style="width: 16px; height: 16px; color: var(--color-accent-primary);">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                ที่อยู่การจัดส่ง
+              </h3>
+              <div id="address-status">กำลังโหลดข้อมูล...</div>
             </div>
             <button class="cart-summary__checkout" id="checkout-btn" onclick="handleCheckout()">
               ดำเนินการสั่งซื้อ
@@ -157,7 +174,7 @@
     <div class="modal__content payment-modal__content">
       <button class="modal__close" id="checkout-modal-close" aria-label="ปิด">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12"/>
+          <path d="M18 6L6 18M6 6l12 12" />
         </svg>
       </button>
       <h2 class="modal__title">ชำระเงิน</h2>
@@ -167,23 +184,23 @@
         <div class="payment-methods">
           <button type="button" class="payment-method-btn" onclick="selectPaymentMethod('qr')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7"/>
-              <rect x="14" y="3" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-              <path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v.01"/>
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+              <path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v.01" />
             </svg>
             <span>สแกน QR Code</span>
           </button>
           <button type="button" class="payment-method-btn" onclick="selectPaymentMethod('bank')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 21h18M4 21V10l8-6 8 6v11M9 21v-6h6v6"/>
+              <path d="M3 21h18M4 21V10l8-6 8 6v11M9 21v-6h6v6" />
             </svg>
             <span>โอนผ่านบัญชีธนาคาร</span>
           </button>
           <button type="button" class="payment-method-btn" onclick="selectPaymentMethod('promptpay')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="5" y="2" width="14" height="20" rx="2"/>
-              <path d="M12 18h.01"/>
+              <rect x="5" y="2" width="14" height="20" rx="2" />
+              <path d="M12 18h.01" />
             </svg>
             <span>พร้อมเพย์ (PromptPay)</span>
           </button>
@@ -195,34 +212,34 @@
         <button type="button" class="payment-panel__back" onclick="backToMethodSelect()">← เปลี่ยนวิธีชำระเงิน</button>
         <div class="mock-qr">
           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" fill="white"/>
-            <rect x="6" y="6" width="22" height="22" fill="black"/>
-            <rect x="12" y="12" width="10" height="10" fill="white"/>
-            <rect x="72" y="6" width="22" height="22" fill="black"/>
-            <rect x="78" y="12" width="10" height="10" fill="white"/>
-            <rect x="6" y="72" width="22" height="22" fill="black"/>
-            <rect x="12" y="78" width="10" height="10" fill="white"/>
-            <rect x="36" y="6" width="6" height="6" fill="black"/>
-            <rect x="48" y="6" width="6" height="6" fill="black"/>
-            <rect x="60" y="12" width="6" height="6" fill="black"/>
-            <rect x="36" y="18" width="6" height="6" fill="black"/>
-            <rect x="54" y="24" width="6" height="6" fill="black"/>
-            <rect x="36" y="36" width="6" height="6" fill="black"/>
-            <rect x="48" y="36" width="6" height="6" fill="black"/>
-            <rect x="60" y="36" width="6" height="6" fill="black"/>
-            <rect x="42" y="48" width="6" height="6" fill="black"/>
-            <rect x="60" y="48" width="6" height="6" fill="black"/>
-            <rect x="72" y="48" width="6" height="6" fill="black"/>
-            <rect x="36" y="60" width="6" height="6" fill="black"/>
-            <rect x="48" y="60" width="6" height="6" fill="black"/>
-            <rect x="84" y="60" width="6" height="6" fill="black"/>
-            <rect x="60" y="66" width="6" height="6" fill="black"/>
-            <rect x="36" y="78" width="6" height="6" fill="black"/>
-            <rect x="48" y="84" width="6" height="6" fill="black"/>
-            <rect x="66" y="84" width="6" height="6" fill="black"/>
-            <rect x="78" y="78" width="6" height="6" fill="black"/>
-            <rect x="84" y="36" width="6" height="6" fill="black"/>
-            <rect x="72" y="30" width="6" height="6" fill="black"/>
+            <rect width="100" height="100" fill="white" />
+            <rect x="6" y="6" width="22" height="22" fill="black" />
+            <rect x="12" y="12" width="10" height="10" fill="white" />
+            <rect x="72" y="6" width="22" height="22" fill="black" />
+            <rect x="78" y="12" width="10" height="10" fill="white" />
+            <rect x="6" y="72" width="22" height="22" fill="black" />
+            <rect x="12" y="78" width="10" height="10" fill="white" />
+            <rect x="36" y="6" width="6" height="6" fill="black" />
+            <rect x="48" y="6" width="6" height="6" fill="black" />
+            <rect x="60" y="12" width="6" height="6" fill="black" />
+            <rect x="36" y="18" width="6" height="6" fill="black" />
+            <rect x="54" y="24" width="6" height="6" fill="black" />
+            <rect x="36" y="36" width="6" height="6" fill="black" />
+            <rect x="48" y="36" width="6" height="6" fill="black" />
+            <rect x="60" y="36" width="6" height="6" fill="black" />
+            <rect x="42" y="48" width="6" height="6" fill="black" />
+            <rect x="60" y="48" width="6" height="6" fill="black" />
+            <rect x="72" y="48" width="6" height="6" fill="black" />
+            <rect x="36" y="60" width="6" height="6" fill="black" />
+            <rect x="48" y="60" width="6" height="6" fill="black" />
+            <rect x="84" y="60" width="6" height="6" fill="black" />
+            <rect x="60" y="66" width="6" height="6" fill="black" />
+            <rect x="36" y="78" width="6" height="6" fill="black" />
+            <rect x="48" y="84" width="6" height="6" fill="black" />
+            <rect x="66" y="84" width="6" height="6" fill="black" />
+            <rect x="78" y="78" width="6" height="6" fill="black" />
+            <rect x="84" y="36" width="6" height="6" fill="black" />
+            <rect x="72" y="30" width="6" height="6" fill="black" />
           </svg>
         </div>
         <p class="payment-panel__hint">สแกน QR นี้ด้วยแอปธนาคารของคุณ<br>(ตัวอย่างระบบจำลอง ไม่ใช่ QR จริง)</p>
@@ -248,7 +265,8 @@
         <button type="button" class="payment-panel__back" onclick="backToMethodSelect()">← เปลี่ยนวิธีชำระเงิน</button>
         <div class="payment-field">
           <label class="payment-field__label" for="promptpay-phone">เบอร์โทรศัพท์ที่ผูก PromptPay</label>
-          <input type="tel" class="payment-field__input" id="promptpay-phone" placeholder="08X-XXX-XXXX" maxlength="10" inputmode="numeric">
+          <input type="tel" class="payment-field__input" id="promptpay-phone" placeholder="08X-XXX-XXXX" maxlength="10"
+            inputmode="numeric">
         </div>
         <p class="payment-panel__hint">(ตัวอย่างระบบจำลอง ไม่มีการตัดเงินจริง)</p>
         <p class="payment-modal__amount">ยอดที่ต้องชำระ<span id="promptpay-amount">฿0</span></p>
@@ -269,7 +287,7 @@
     function renderCartPage() {
       const cartItems = document.getElementById('cart-items');
       const cartContent = document.getElementById('cart-content');
-      
+
       if (!cartItems) return;
 
       if (cart.length === 0) {
@@ -356,11 +374,125 @@
       showNotification('ลบสินค้าออกจากตะกร้าแล้ว');
     }
 
-    function handleCheckout() {
+    let savedAddress = '';
+
+    async function loadShippingAddress() {
+      const addressStatus = document.getElementById('address-status');
+      if (!addressStatus) return;
+
+      if (!isUserLoggedIn()) {
+        addressStatus.innerHTML = `
+          <span style="color: var(--color-red); font-size: 13px; font-weight: 500;">กรุณาเข้าสู่ระบบก่อนทำการสั่งซื้อ</span>
+          <a href="login.html" style="display: block; font-size: 12px; color: var(--color-accent-primary); text-decoration: none; margin-top: 4px; font-weight: 600;">เข้าสู่ระบบที่นี่ →</a>
+        `;
+        return;
+      }
+
+      try {
+        const token = getAuthToken();
+        const response = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'โหลดข้อมูลโปรไฟล์ไม่สำเร็จ');
+        }
+
+        const user = data.data;
+        savedAddress = (user.address && user.address.full) || '';
+
+        if (savedAddress.trim()) {
+          addressStatus.innerHTML = `
+            <p style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 6px; line-height: 1.4;">${savedAddress}</p>
+            <a href="profile.html" style="font-size: 12px; color: var(--color-accent-primary); text-decoration: none; font-weight: 600;">แก้ไขที่อยู่จัดส่ง →</a>
+          `;
+        } else {
+          addressStatus.innerHTML = `
+            <textarea id="cart-shipping-address" placeholder="กรุณากรอกที่อยู่ในการจัดส่งสินค้าของคุณ" style="width: 100%; padding: 10px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); font-family: inherit; font-size: 13px; resize: vertical; margin-top: 4px;" rows="3"></textarea>
+            <span class="field-error" id="cart-address-error" style="color: var(--color-red); font-size: 11px; display: block; margin-top: 4px; font-weight: 500;"></span>
+          `;
+        }
+      } catch (error) {
+        console.error('Error loading shipping address:', error);
+        addressStatus.innerHTML = `<span style="color: var(--color-red); font-size: 13px;">เกิดข้อผิดพลาดในการโหลดข้อมูล</span>`;
+      }
+    }
+
+    async function handleCheckout() {
       if (cart.length === 0) {
         showNotification('ตะกร้าสินค้าว่าง กรุณาเพิ่มสินค้า');
         return;
       }
+
+      if (!isUserLoggedIn()) {
+        showNotification('กรุณาเข้าสู่ระบบก่อนทำการสั่งซื้อ');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 1000);
+        return;
+      }
+
+      // ตรวจสอบที่อยู่จัดส่ง
+      const textarea = document.getElementById('cart-shipping-address');
+      if (textarea) {
+        const inputAddress = textarea.value.trim();
+        const errorEl = document.getElementById('cart-address-error');
+
+        if (!inputAddress) {
+          textarea.style.borderColor = 'var(--color-red)';
+          if (errorEl) errorEl.textContent = 'กรุณากรอกที่อยู่การจัดส่งสินค้าก่อนทำรายการ';
+          showNotification('⚠️ กรุณาระบุที่อยู่จัดส่ง');
+          return;
+        }
+
+        // บันทึกที่อยู่ลงฐานข้อมูลและ user_address table
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const originalText = checkoutBtn.textContent;
+        checkoutBtn.disabled = true;
+        checkoutBtn.textContent = 'กำลังบันทึกที่อยู่จัดส่ง...';
+
+        try {
+          const token = getAuthToken();
+          const user = getCurrentUser();
+
+          const response = await fetch('/api/auth/profile', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              name: user.name,
+              email: user.email,
+              phone: user.phone || null,
+              address: { full: inputAddress }
+            })
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.message || 'บันทึกที่อยู่ไม่สำเร็จ');
+          }
+
+          savedAddress = inputAddress;
+          await loadShippingAddress();
+          showNotification('💾 บันทึกที่อยู่จัดส่งเรียบร้อย');
+        } catch (error) {
+          console.error('Save address error:', error);
+          showNotification('❌ ' + (error.message || 'เกิดข้อผิดพลาดในการบันทึกที่อยู่'));
+          checkoutBtn.disabled = false;
+          checkoutBtn.textContent = originalText;
+          return;
+        } finally {
+          checkoutBtn.disabled = false;
+          checkoutBtn.textContent = originalText;
+        }
+      } else if (!savedAddress.trim()) {
+        showNotification('⚠️ กรุณาระบุที่อยู่จัดส่งในหน้าโปรไฟล์ของคุณ');
+        return;
+      }
+
       openCheckoutModal();
     }
 
@@ -409,25 +541,59 @@
       confirmMockPayment();
     }
 
-    function confirmMockPayment() {
+    async function confirmMockPayment(methodName = 'โอนเงิน') {
       document.getElementById('payment-method-select').style.display = 'none';
       document.querySelectorAll('.payment-panel').forEach(p => p.classList.remove('payment-panel--active'));
       document.getElementById('payment-processing').classList.add('payment-processing--active');
 
-      // Simulate a short payment-verification delay
-      setTimeout(() => {
+      try {
+        const token = getAuthToken();
+        const orderItems = cart.map(item => ({
+          product: item.id,
+          quantity: item.quantity
+        }));
+
+        const response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            items: orderItems,
+            shippingAddress: { full: savedAddress },
+            paymentMethod: methodName,
+            note: ''
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'การสั่งซื้อล้มเหลว');
+        }
+
+        setTimeout(() => {
+          closeCheckoutModal();
+          cart = [];
+          saveCart();
+          showNotification('🎉 ชำระเงินสำเร็จ! ขอบคุณที่ใช้บริการ');
+          setTimeout(() => {
+            window.location.href = 'orders.html';
+          }, 1500);
+        }, 1000);
+      } catch (error) {
+        console.error('Checkout error:', error);
         closeCheckoutModal();
-        cart = [];
-        saveCart();
-        renderCartPage();
-        showNotification('🎉 ชำระเงินสำเร็จ! ขอบคุณที่ใช้บริการ');
-      }, 1500);
+        showNotification('❌ ' + error.message);
+      }
     }
 
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
       renderCartPage();
       updateCartCount();
+      loadShippingAddress();
 
       const closeBtn = document.getElementById('checkout-modal-close');
       const backdrop = document.getElementById('checkout-modal-backdrop');
@@ -436,4 +602,5 @@
     });
   </script>
 </body>
+
 </html>
