@@ -6,7 +6,7 @@
   <meta name="description" content="ตะกร้าสินค้า - AutoParts Pro อุปกรณ์แต่งรถเก๋งคุณภาพสูง">
   <title>ตะกร้าสินค้า - AutoParts Pro</title>
   <link rel="stylesheet" href="../css/styles.css">
-  <link rel="stylesheet" href="../css/pages.css">
+  <link rel="stylesheet" href="../css/pages.css?v=2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
@@ -179,9 +179,9 @@
             <div class="cart-item__bottom">
               <div style="display: flex; align-items: center; gap: 12px;">
                 <div class="product-detail__qty-controls">
-                  <button class="product-detail__qty-btn" onclick="changeCartQty(${item.id}, -1)">−</button>
-                  <input type="number" class="product-detail__qty-input" value="${item.quantity}" min="1" onchange="setCartQty(${item.id}, this.value)" style="width: 50px;">
-                  <button class="product-detail__qty-btn" onclick="changeCartQty(${item.id}, 1)">+</button>
+                  <button type="button" class="product-detail__qty-btn" onclick="changeCartQty(${item.id}, -1)">−</button>
+                  <input type="number" class="product-detail__qty-input" value="${item.quantity}" min="1" readonly style="width: 50px;">
+                  <button type="button" class="product-detail__qty-btn" onclick="changeCartQty(${item.id}, 1)">+</button>
                 </div>
                 <span class="cart-item__price">฿${(item.price * item.quantity).toLocaleString()}</span>
               </div>
@@ -213,7 +213,7 @@
     }
 
     function changeCartQty(productId, delta) {
-      const item = cart.find(i => i.id === productId);
+      const item = cart.find(i => String(i.id) === String(productId));
       if (item) {
         item.quantity = Math.max(1, item.quantity + delta);
         saveCart();
@@ -222,11 +222,12 @@
     }
 
     function setCartQty(productId, value) {
-      const qty = parseInt(value);
-      if (qty >= 1) {
+      const qty = parseInt(value, 10);
+      if (Number.isFinite(qty) && qty >= 1) {
         updateCartQuantity(productId, qty);
-        renderCartPage();
       }
+      // Always re-render so an invalid/empty entry snaps back to the real (valid) quantity
+      renderCartPage();
     }
 
     function removeCartItem(productId) {
