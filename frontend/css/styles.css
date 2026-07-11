@@ -703,9 +703,7 @@ input {
   top: calc(100% + 8px);
   left: 0;
   z-index: 20;
-  min-width: 220px;
-  max-height: 340px;
-  overflow-y: auto;
+  min-width: 240px;
   background: var(--color-bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);

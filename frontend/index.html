@@ -197,56 +197,56 @@
     <section class="categories" id="categories-section">
       <div class="container">
         <div class="categories__tabs" id="category-tabs">
-          <div class="categories__dropdown" id="category-dropdown">
-            <button class="categories__tab categories__tab--dropdown active" data-category="all" id="tab-all">
+          <div class="categories__filter" id="category-dropdown">
+            <button class="categories__filter-btn active" data-category="all" id="tab-all">
               <span>สินค้าทั้งหมด</span>
-              <svg class="categories__dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <svg class="categories__filter-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <path d="M6 9l6 6 6-6"/>
               </svg>
             </button>
-            <div class="categories__dropdown-menu" id="category-dropdown-menu">
-              <label class="categories__dropdown-item">
-                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="spoiler">
+            <div class="categories__filter-panel" id="category-dropdown-menu">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-subcategory="spoiler">
                 <span>สปอยเลอร์</span>
               </label>
-              <label class="categories__dropdown-item">
-                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="seat">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-subcategory="seat">
                 <span>เบาะ</span>
               </label>
-              <label class="categories__dropdown-item">
-                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="wheel">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-subcategory="wheel">
                 <span>ล้อแม็ก</span>
               </label>
-              <label class="categories__dropdown-item">
-                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="steering">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-subcategory="steering">
                 <span>พวงมาลัย</span>
               </label>
-              <label class="categories__dropdown-item">
-                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="hood">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-subcategory="hood">
                 <span>ฝากระโปรง</span>
               </label>
-              <label class="categories__dropdown-item">
-                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="exhaust-tip">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-subcategory="exhaust-tip">
                 <span>ปลายท่อไอเสีย</span>
               </label>
-              <label class="categories__dropdown-item">
-                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="bumper">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-subcategory="bumper">
                 <span>กันชน</span>
               </label>
-              <label class="categories__dropdown-item">
-                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="headlight">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-subcategory="headlight">
                 <span>ไฟหน้า</span>
               </label>
-              <label class="categories__dropdown-item">
-                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="grille">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-subcategory="grille">
                 <span>กระจังหน้า</span>
               </label>
-              <label class="categories__dropdown-item">
-                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="front-lip">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-subcategory="front-lip">
                 <span>ลิ้นหน้า</span>
               </label>
-              <label class="categories__dropdown-item">
-                <input type="checkbox" class="categories__dropdown-checkbox" data-subcategory="mirror-cover">
+              <label class="filter-checkbox">
+                <input type="checkbox" data-subcategory="mirror-cover">
                 <span>ครอบกระจก</span>
               </label>
             </div>
@@ -466,7 +466,7 @@
 
       const label = trigger.querySelector('span');
       const baseLabel = label ? label.textContent : 'สินค้าทั้งหมด';
-      const checkboxes = Array.from(menu.querySelectorAll('.categories__dropdown-checkbox'));
+      const checkboxes = Array.from(menu.querySelectorAll('input[type="checkbox"]'));
 
       const closeDropdown = () => dropdown.classList.remove('open');
 
@@ -475,6 +475,15 @@
 
         // Update global activeCategories state
         activeCategories = checked;
+
+        // Toggle .checked class on the label for bold text styling
+        checkboxes.forEach((cb) => {
+          if (cb.checked) {
+            cb.closest('.filter-checkbox').classList.add('checked');
+          } else {
+            cb.closest('.filter-checkbox').classList.remove('checked');
+          }
+        });
 
         // Update button label to reflect selection count
         if (label) {
