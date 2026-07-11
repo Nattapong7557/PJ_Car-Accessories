@@ -53,7 +53,7 @@ function addToCart(productId, quantity = 1, productOverride = null) {
   const product = productOverride || products.find(p => Number(p.id) === normalizedId);
   if (!product) return;
   
-  const existing = cart.find(item => item.id === productId);
+  const existing = cart.find(item => String(item.id) === String(productId));
   if (existing) {
     existing.quantity += quantity;
   } else {
@@ -65,12 +65,12 @@ function addToCart(productId, quantity = 1, productOverride = null) {
 }
 
 function removeFromCart(productId) {
-  cart = cart.filter(item => item.id !== productId);
+  cart = cart.filter(item => String(item.id) !== String(productId));
   saveCart();
 }
 
 function updateCartQuantity(productId, quantity) {
-  const item = cart.find(i => i.id === productId);
+  const item = cart.find(i => String(i.id) === String(productId));
   if (item) {
     item.quantity = Math.max(1, quantity);
     saveCart();
@@ -212,7 +212,7 @@ function createProductCard(product) {
   `;
 }
 
-function renderProducts(filter = 'all', carBrand = null) {
+function renderProducts(filter = 'all') {
   const grid = document.getElementById('products-grid');
   if (!grid) return;
 
@@ -228,10 +228,7 @@ function renderProducts(filter = 'all', carBrand = null) {
   }
   
   let filtered;
-  if (Array.isArray(filter)) {
-    // Multiple subcategories checked in the "สินค้าทั้งหมด" dropdown -> match any of them
-    filtered = filter.length ? products.filter(p => filter.includes(p.category)) : products;
-  } else if (filter === 'all') {
+  if (filter === 'all') {
     filtered = products;
   } else if (filter === 'bestseller') {
     // treat 'bestseller' as items with category 'bestseller' OR badge indicating hot/bestseller
@@ -245,12 +242,7 @@ function renderProducts(filter = 'all', carBrand = null) {
   } else {
     filtered = products.filter(p => p.category === filter);
   }
-
-  // Further narrow by car brand when a logo in the brand filter strip is selected
-  if (carBrand) {
-    filtered = filtered.filter(p => String(p.carBrand || '').toLowerCase() === String(carBrand).toLowerCase());
-  }
-
+  
   if (!filtered.length) {
     grid.innerHTML = `
       <div class="empty-state" style="grid-column: 1 / -1; text-align:center; padding:80px 0;">
@@ -356,6 +348,50 @@ function initCarousel() {
 }
 
 // ==========================================
+// Category Tabs
+// ==========================================
+function initCategoryTabs() {
+  const tabs = document.querySelectorAll('.categories__tab');
+  
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      renderProducts(tab.dataset.category);
+
+      // sync header nav active state when a category tab is clicked
+      const headerLink = document.querySelector(`.header__nav-link[data-category="${tab.dataset.category}"]`);
+      if (headerLink) {
+        document.querySelectorAll('.header__nav-link').forEach(l => l.classList.remove('active'));
+        headerLink.classList.add('active');
+      }
+    });
+  });
+}
+
+// Initialize header navigation links to filter products
+function initHeaderNav() {
+  const links = document.querySelectorAll('.header__nav-link');
+  if (!links || !links.length) return;
+
+  links.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      links.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+
+      const category = link.dataset.category || 'all';
+      // sync category tab active state
+      document.querySelectorAll('.categories__tab').forEach(t => t.classList.toggle('active', t.dataset.category === category));
+
+      renderProducts(category);
+      const productsSection = document.getElementById('products-section');
+      if (productsSection) window.scrollTo({ top: productsSection.offsetTop - 80, behavior: 'smooth' });
+    });
+  });
+}
+
+// ==========================================
 // Mobile Menu
 // ==========================================
 function initMobileMenu() {
@@ -370,74 +406,6 @@ function initMobileMenu() {
     toggle.innerHTML = isOpen 
       ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>'
       : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>';
-  });
-}
-
-// ==========================================
-// Car Brand Logo Filter (horizontal smooth-scroll strip)
-// ==========================================
-function initBrandsFilter() {
-  const track = document.getElementById('brands-track');
-  if (!track) return;
-
-  const items = Array.from(track.querySelectorAll('.brands__item'));
-  let activeBrand = 'all';
-
-  // Smooth click-and-drag scrolling for mouse users
-  let isDown = false;
-  let didDrag = false;
-  let startX = 0;
-  let startScroll = 0;
-
-  track.addEventListener('mousedown', (e) => {
-    isDown = true;
-    didDrag = false;
-    startX = e.pageX;
-    startScroll = track.scrollLeft;
-    track.classList.add('dragging');
-  });
-
-  window.addEventListener('mouseup', () => {
-    isDown = false;
-    track.classList.remove('dragging');
-  });
-
-  window.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    const delta = e.pageX - startX;
-    if (Math.abs(delta) > 4) didDrag = true;
-    track.scrollLeft = startScroll - delta;
-  });
-
-  // Click a logo to filter products by that car brand; click again (or "ทั้งหมด") to reset
-  items.forEach((item) => {
-    item.addEventListener('click', () => {
-      if (didDrag) return; // ignore the click that follows a drag gesture
-
-      const brand = item.dataset.carBrand;
-      activeBrand = activeBrand === brand ? 'all' : brand;
-
-      items.forEach((i) => i.classList.toggle('active', i.dataset.carBrand === activeBrand));
-
-      // Reset the "สินค้าทั้งหมด" category dropdown so the two filters don't conflict
-      const dropdownTrigger = document.getElementById('tab-all');
-      const dropdownMenu = document.getElementById('category-dropdown-menu');
-      if (dropdownMenu) {
-        dropdownMenu.querySelectorAll('.categories__dropdown-checkbox').forEach((cb) => {
-          cb.checked = false;
-        });
-      }
-      if (dropdownTrigger) {
-        const label = dropdownTrigger.querySelector('span');
-        if (label) label.textContent = 'สินค้าทั้งหมด';
-        dropdownTrigger.classList.add('active');
-      }
-
-      renderProducts('all', activeBrand === 'all' ? null : activeBrand);
-
-      // Keep the selected logo comfortably in view
-      item.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    });
   });
 }
 
@@ -721,7 +689,8 @@ function formatPrice(price) {
 document.addEventListener('DOMContentLoaded', () => {
   initLoading();
   initCarousel();
-  initBrandsFilter();
+  initHeaderNav();
+  initCategoryTabs();
   initMobileMenu();
   initSearch();
   initLoginModal();

@@ -235,6 +235,15 @@
   color: var(--color-text-primary);
   border-left: 1px solid var(--color-border);
   border-right: 1px solid var(--color-border);
+  /* Hide native number input spin arrows (^ / v) so only the custom -/+ buttons are used */
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.product-detail__qty-input::-webkit-outer-spin-button,
+.product-detail__qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .product-detail__actions {
