@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - AutoParts Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0f0f1a;
+    --bg-1:#1a1a2e;
+    --bg-2:#16162a;
+    --panel:#1e1e35;
+    --border:rgba(255,255,255,0.08);
+    --text:#f0f0f5;
+    --text-dim:#9a9ab0;
+    --accent:#ff6b35;
+    --accent-dim:rgba(255,107,53,0.15);
+    --teal:#2ec4b6;
+    --red:#e63946;
+    --yellow:#ffb703;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Kanit', sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(255,107,53,0.08), transparent 40%),
+      radial-gradient(circle at 85% 100%, rgba(46,196,182,0.06), transparent 40%),
+      var(--bg-0);
+    color:var(--text);
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  a{color:inherit; text-decoration:none;}
+
+  /* ===== Header ===== */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px;
+    background:linear-gradient(135deg, var(--bg-1), var(--bg-2));
+    border-bottom:1px solid var(--border);
+    position:sticky; top:0; z-index:20;
+  }
+  .topbar__left{display:flex; align-items:center; gap:14px;}
+  .topbar__badge{
+    width:38px; height:38px; border-radius:10px;
+    background:linear-gradient(135deg, var(--accent), #ff8a5c);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:1rem; color:#1a1a2e;
+  }
+  .topbar__title{font-size:1.05rem; font-weight:600;}
+  .topbar__subtitle{font-size:0.78rem; color:var(--text-dim);}
+  .topbar__back{
+    font-size:0.85rem; color:var(--text-dim);
+    border:1px solid var(--border); padding:8px 16px; border-radius:8px;
+    transition:.2s;
+  }
+  .topbar__back:hover{color:var(--text); border-color:var(--accent);}
+
+  /* ===== Layout ===== */
+  .wrap{max-width:1200px; margin:0 auto; padding:28px 24px;}
+
+  .tabs{display:flex; gap:8px; margin-bottom:24px; border-bottom:1px solid var(--border);}
+  .tab-btn{
+    background:none; border:none; color:var(--text-dim);
+    font-family:inherit; font-size:0.95rem; font-weight:500;
+    padding:12px 6px; cursor:pointer; position:relative;
+    display:flex; align-items:center; gap:8px;
+    margin-right:22px;
+  }
+  .tab-btn svg{width:18px; height:18px;}
+  .tab-btn.active{color:var(--text);}
+  .tab-btn.active::after{
+    content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px;
+    background:var(--accent);
+  }
+
+  .panel{
+    background:var(--panel); border:1px solid var(--border); border-radius:14px;
+    padding:20px; display:none;
+  }
+  .panel.active{display:block;}
+
+  .panel__head{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+    margin-bottom:18px;
+  }
+  .panel__title{font-size:1.05rem; font-weight:600;}
+  .panel__stats{display:flex; gap:10px; flex-wrap:wrap;}
+  .stat-chip{
+    font-size:0.78rem; padding:6px 12px; border-radius:999px;
+    background:rgba(255,255,255,0.04); border:1px solid var(--border);
+    color:var(--text-dim);
+  }
+  .stat-chip b{color:var(--text); font-weight:600;}
+  .stat-chip.warn b{color:var(--yellow);}
+  .stat-chip.danger b{color:var(--red);}
+
+  .search-row{display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;}
+  .search-row input, .search-row select{
+    background:var(--bg-2); border:1px solid var(--border); color:var(--text);
+    font-family:inherit; font-size:0.85rem; padding:9px 12px; border-radius:8px;
+  }
+  .search-row input{flex:1; min-width:200px;}
+  .search-row input:focus, .search-row select:focus{outline:none; border-color:var(--accent);}
+
+  table{width:100%; border-collapse:collapse; font-size:0.85rem;}
+  thead th{
+    text-align:left; padding:10px 12px; color:var(--text-dim); font-weight:500;
+    font-size:0.75rem; text-transform:uppercase; letter-spacing:.03em;
+    border-bottom:1px solid var(--border);
+    white-space:nowrap;
+  }
+  tbody td{padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:middle;}
+  tbody tr:hover{background:rgba(255,255,255,0.02);}
+  tbody tr:last-child td{border-bottom:none;}
+
+  .prod-cell{display:flex; align-items:center; gap:10px;}
+  .prod-cell img{width:40px; height:40px; border-radius:8px; object-fit:cover; background:#000;}
+  .prod-name{font-weight:500; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .prod-brand{font-size:0.72rem; color:var(--text-dim);}
+
+  .badge{
+    display:inline-block; padding:3px 10px; border-radius:999px; font-size:0.72rem; font-weight:500;
+  }
+  .badge--active{background:rgba(46,196,182,0.15); color:var(--teal);}
+  .badge--inactive{background:rgba(230,57,70,0.15); color:var(--red);}
+  .badge--admin{background:rgba(255,107,53,0.18); color:var(--accent);}
+  .badge--manager{background:rgba(255,183,3,0.15); color:var(--yellow);}
+  .badge--user{background:rgba(255,255,255,0.06); color:var(--text-dim);}
+
+  .stock-input{
+    width:64px; background:var(--bg-2); border:1px solid var(--border); color:var(--text);
+    font-family:inherit; font-size:0.85rem; padding:6px 8px; border-radius:6px; text-align:center;
+  }
+  .stock-input:focus{outline:none; border-color:var(--accent);}
+  .stock-low{color:var(--yellow); font-weight:600;}
+  .stock-out{color:var(--red); font-weight:600;}
+
+  .btn{
+    font-family:inherit; font-size:0.78rem; font-weight:500; padding:7px 14px;
+    border-radius:7px; border:1px solid var(--border); background:transparent; color:var(--text);
+    cursor:pointer; transition:.15s; white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--accent); color:var(--accent);}
+  .btn--primary{background:var(--accent); border-color:var(--accent); color:#1a1a2e;}
+  .btn--primary:hover{background:#ff7d4d; color:#1a1a2e;}
+  .btn--sm{padding:5px 10px; font-size:0.72rem;}
+  .btn[disabled]{opacity:.4; cursor:not-allowed;}
+
+  .role-select{
+    background:var(--bg-2); border:1px solid var(--border); color:var(--text);
+    font-family:inherit; font-size:0.8rem; padding:6px 10px; border-radius:7px;
+  }
+
+  .empty, .loading{
+    text-align:center; padding:50px 20px; color:var(--text-dim); font-size:0.9rem;
+  }
+  .loading .spin{
+    width:26px; height:26px; border-radius:50%; border:3px solid var(--border);
+    border-top-color:var(--accent); margin:0 auto 12px; animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ===== Modal ===== */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(3px);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
+  }
+  .modal-overlay.active{display:flex;}
+  .modal{
+    background:var(--panel); border:1px solid var(--border); border-radius:14px;
+    width:100%; max-width:480px; max-height:88vh; overflow-y:auto;
+    padding:24px;
+  }
+  .modal__title{font-size:1.05rem; font-weight:600; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center;}
+  .modal__close{cursor:pointer; color:var(--text-dim); font-size:1.3rem; line-height:1;}
+  .modal__close:hover{color:var(--text);}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:0.78rem; color:var(--text-dim); margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%; background:var(--bg-2); border:1px solid var(--border); color:var(--text);
+    font-family:inherit; font-size:0.85rem; padding:9px 12px; border-radius:8px;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--accent);}
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .modal__actions{display:flex; justify-content:flex-end; gap:10px; margin-top:20px;}
+
+  /* ===== Toast ===== */
+  #toast{
+    position:fixed; top:20px; right:20px; z-index:200; display:flex; flex-direction:column; gap:8px;
+  }
+  .toast-item{
+    background:linear-gradient(135deg, var(--bg-1), var(--bg-2));
+    border:1px solid rgba(255,107,53,0.3); color:var(--text);
+    padding:12px 18px; border-radius:10px; font-size:0.85rem;
+    box-shadow:0 8px 24px rgba(0,0,0,0.4);
+    animation:toastIn .25s ease-out;
+  }
+  .toast-item.error{border-color:rgba(230,57,70,0.4);}
+  @keyframes toastIn{from{opacity:0; transform:translateX(30px);} to{opacity:1; transform:translateX(0);}}
+
+  .gate{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:70vh; text-align:center; gap:14px; padding:20px;
+  }
+  .gate h2{font-size:1.2rem;}
+  .gate p{color:var(--text-dim); font-size:0.9rem; max-width:360px;}
+
+  @media (max-width:640px){
+    .topbar{padding:14px 16px;}
+    .wrap{padding:18px 12px;}
+    .field-row{grid-template-columns:1fr;}
+    table{font-size:0.78rem;}
+    .prod-name{max-width:120px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar__left">
+    <div class="topbar__badge">AP</div>
+    <div>
+      <div class="topbar__title">Admin Dashboard</div>
+      <div class="topbar__subtitle">AutoParts Pro — จัดการสต๊อกและสิทธิ์ผู้ใช้</div>
+    </div>
+  </div>
+  <a href="../index.html" class="topbar__back">← กลับหน้าหลัก</a>
+</div>
+
+<div id="app" class="wrap">
+  <div class="loading"><div class="spin"></div>กำลังตรวจสอบสิทธิ์การเข้าถึง...</div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Modal: แก้ไขสินค้า -->
+<div class="modal-overlay" id="productModalOverlay">
+  <div class="modal">
+    <div class="modal__title">
+      <span id="productModalTitle">แก้ไขสินค้า</span>
+      <span class="modal__close" onclick="closeProductModal()">&times;</span>
+    </div>
+    <form id="productForm">
+      <input type="hidden" id="pf-id">
+      <div class="field">
+        <label>ชื่อสินค้า</label>
+        <input type="text" id="pf-name" required>
+      </div>
+      <div class="field">
+        <label>ลิงก์รูปภาพสินค้า (URL)</label>
+        <input type="text" id="pf-image" placeholder="assets/images/products/xxx.png" required>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>ราคาขาย (บาท)</label>
+          <input type="number" id="pf-price" min="0" step="0.01" required>
+        </div>
+        <div class="field">
+          <label>ราคาเต็ม (ถ้ามีส่วนลด)</label>
+          <input type="number" id="pf-originalPrice" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>สต๊อกคงเหลือ</label>
+          <input type="number" id="pf-stock" min="0" required>
+        </div>
+        <div class="field">
+          <label>หมวดหมู่</label>
+          <input type="text" id="pf-category" required>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>ยี่ห้ออุปกรณ์ (ไม่บังคับ)</label>
+          <input type="text" id="pf-brand" placeholder="เช่น RAYS, ADRO">
+        </div>
+        <div class="field">
+          <label>ยี่ห้อรถยนต์ (ไม่บังคับ)</label>
+          <input type="text" id="pf-carBrand" placeholder="เช่น BMW, Toyota">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>ป้ายกำกับ</label>
+          <select id="pf-badge">
+            <option value="">ไม่มี</option>
+            <option value="sale">ลดราคา</option>
+            <option value="new">สินค้าใหม่</option>
+            <option value="hot">ขายดี</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>สถานะ</label>
+          <select id="pf-isActive">
+            <option value="true">แสดงในร้าน</option>
+            <option value="false">ซ่อน/ปิดการขาย</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>คำอธิบายสินค้า</label>
+        <textarea id="pf-description" rows="3" required></textarea>
+      </div>
+      <div class="modal__actions">
+        <button type="button" class="btn" onclick="closeProductModal()">ยกเลิก</button>
+        <button type="submit" class="btn btn--primary" id="pf-submit">บันทึกการแก้ไข</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const API_BASE = '/api';
+
+function getToken(){ return localStorage.getItem('authToken'); }
+function getUser(){
+  try { return JSON.parse(localStorage.getItem('currentUser')); } catch { return null; }
+}
+function isAdmin(user){
+  if (!user) return false;
+  const roleId = user.role_id ?? user.roleId;
+  const roleName = user.role ?? user.roleName;
+  return Number(roleId) === 1 || String(roleName).toLowerCase() === 'admin';
+}
+
+function showToast(message, isError){
+  const box = document.getElementById('toast');
+  const el = document.createElement('div');
+  el.className = 'toast-item' + (isError ? ' error' : '');
+  el.textContent = message;
+  box.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+async function apiFetch(path, options = {}){
+  const res = await fetch(API_BASE + path, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + getToken(),
+      ...(options.headers || {})
+    }
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data.success === false) {
+    throw new Error(data.message || `เกิดข้อผิดพลาด (${res.status})`);
+  }
+  return data;
+}
+
+// ===== State =====
+let allProducts = [];
+let allUsers = [];
+let productsPage = 1;
+let productsTotalPages = 1;
+
+// ===== Init / Access Gate =====
+function initDashboard(){
+  const user = getUser();
+  const app = document.getElementById('app');
+
+  if (!getToken() || !user) {
+    app.innerHTML = `
+      <div class="gate">
+        <h2>กรุณาเข้าสู่ระบบ</h2>
+        <p>ต้องลงชื่อเข้าใช้ด้วยบัญชีผู้ดูแลระบบก่อนถึงจะเข้าหน้านี้ได้</p>
+        <a class="btn btn--primary" href="login.html">ไปหน้าเข้าสู่ระบบ</a>
+      </div>`;
+    return;
+  }
+
+  if (!isAdmin(user)) {
+    app.innerHTML = `
+      <div class="gate">
+        <h2>ไม่มีสิทธิ์เข้าถึง</h2>
+        <p>หน้านี้สำหรับผู้ดูแลระบบ (admin) เท่านั้น บัญชีของคุณไม่มีสิทธิ์นี้</p>
+        <a class="btn" href="../index.html">กลับหน้าหลัก</a>
+      </div>`;
+    return;
+  }
+
+  renderShell();
+  loadProducts();
+}
+
+function renderShell(){
+  document.getElementById('app').innerHTML = `
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="stock" onclick="switchTab('stock')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        สต๊อกและสินค้า
+      </button>
+      <button class="tab-btn" data-tab="users" onclick="switchTab('users')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2M17 11a4 4 0 0 0 0-8M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        สิทธิ์ผู้ใช้ (Role)
+      </button>
+    </div>
+
+    <div class="panel active" id="panel-stock">
+      <div class="panel__head">
+        <div class="panel__title">รายการสินค้า</div>
+        <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+          <div class="panel__stats" id="stock-stats"></div>
+          <button class="btn btn--primary btn--sm" onclick="openProductModal()">+ เพิ่มสินค้าใหม่</button>
+        </div>
+      </div>
+      <div class="search-row">
+        <input type="text" id="product-search" placeholder="ค้นหาชื่อสินค้า..." oninput="renderProductsTable()">
+        <select id="stock-filter" onchange="renderProductsTable()">
+          <option value="all">สต๊อกทั้งหมด</option>
+          <option value="low">ใกล้หมด (&lt; 10)</option>
+          <option value="out">หมดสต๊อก (0)</option>
+        </select>
+      </div>
+      <div id="products-table-wrap"><div class="loading"><div class="spin"></div>กำลังโหลดสินค้า...</div></div>
+    </div>
+
+    <div class="panel" id="panel-users">
+      <div class="panel__head">
+        <div class="panel__title">ผู้ใช้งานทั้งหมด</div>
+        <div class="panel__stats" id="users-stats"></div>
+      </div>
+      <div class="search-row">
+        <input type="text" id="user-search" placeholder="ค้นหาชื่อหรืออีเมล..." oninput="renderUsersTable()">
+        <select id="role-filter" onchange="renderUsersTable()">
+          <option value="all">ทุก Role</option>
+          <option value="admin">Admin</option>
+          <option value="manager">Manager</option>
+          <option value="user">User</option>
+        </select>
+      </div>
+      <div id="users-table-wrap"><div class="loading"><div class="spin"></div>กำลังโหลดผู้ใช้งาน...</div></div>
+    </div>
+  `;
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.getElementById('panel-stock').classList.toggle('active', tab === 'stock');
+  document.getElementById('panel-users').classList.toggle('active', tab === 'users');
+  if (tab === 'users' && allUsers.length === 0) loadUsers();
+}
+
+// ===== Products =====
+async function loadProducts(){
+  try {
+    const result = await apiFetch(`/products?limit=50&page=1`);
+    allProducts = result.data || [];
+    productsTotalPages = (result.pagination && result.pagination.totalPages) || 1;
+    productsPage = 1;
+    renderProductsTable();
+  } catch (err) {
+    document.getElementById('products-table-wrap').innerHTML =
+      `<div class="empty">โหลดสินค้าไม่สำเร็จ: ${escapeHtml(err.message)}</div>`;
+  }
+}
+
+async function loadMoreProducts(){
+  if (productsPage >= productsTotalPages) return;
+  try {
+    productsPage += 1;
+    const result = await apiFetch(`/products?limit=50&page=${productsPage}`);
+    allProducts = allProducts.concat(result.data || []);
+    renderProductsTable();
+  } catch (err) {
+    showToast('โหลดสินค้าเพิ่มเติมไม่สำเร็จ: ' + err.message, true);
+  }
+}
+
+function renderProductsTable(){
+  const wrap = document.getElementById('products-table-wrap');
+  const search = (document.getElementById('product-search')?.value || '').toLowerCase().trim();
+  const stockFilter = document.getElementById('stock-filter')?.value || 'all';
+
+  let list = allProducts.filter(p => !search || (p.name || '').toLowerCase().includes(search));
+  if (stockFilter === 'low') list = list.filter(p => Number(p.stock) > 0 && Number(p.stock) < 10);
+  if (stockFilter === 'out') list = list.filter(p => Number(p.stock) === 0);
+
+  const outCount = allProducts.filter(p => Number(p.stock) === 0).length;
+  const lowCount = allProducts.filter(p => Number(p.stock) > 0 && Number(p.stock) < 10).length;
+  document.getElementById('stock-stats').innerHTML = `
+    <span class="stat-chip">สินค้าทั้งหมด <b>${allProducts.length}</b></span>
+    <span class="stat-chip warn">ใกล้หมด <b>${lowCount}</b></span>
+    <span class="stat-chip danger">หมดสต๊อก <b>${outCount}</b></span>
+  `;
+
+  if (!list.length) {
+    wrap.innerHTML = `<div class="empty">ไม่พบสินค้าที่ตรงกับเงื่อนไข</div>`;
+    return;
+  }
+
+  const rows = list.map(p => {
+    const stockClass = Number(p.stock) === 0 ? 'stock-out' : (Number(p.stock) < 10 ? 'stock-low' : '');
+    return `
+      <tr>
+        <td>
+          <div class="prod-cell">
+            <img src="${escapeHtml(p.image || '')}" alt="" onerror="this.style.visibility='hidden'">
+            <div>
+              <div class="prod-name" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>
+              <div class="prod-brand">${escapeHtml(p.brand || '')} · ${escapeHtml(p.category || '')}</div>
+            </div>
+          </div>
+        </td>
+        <td>฿${Number(p.price).toLocaleString()}</td>
+        <td>
+          <input type="number" min="0" class="stock-input ${stockClass}" id="stock-${p.id}" value="${Number(p.stock)}">
+        </td>
+        <td><span class="badge ${p.isActive ? 'badge--active' : 'badge--inactive'}">${p.isActive ? 'แสดงอยู่' : 'ปิดขาย'}</span></td>
+        <td>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn--sm btn--primary" onclick="saveStock(${p.id})">บันทึกสต๊อก</button>
+            <button class="btn btn--sm" onclick="openProductModal(${p.id})">แก้ไขสินค้า</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  const loadMoreBtn = productsPage < productsTotalPages
+    ? `<div style="text-align:center; margin-top:14px;"><button class="btn" onclick="loadMoreProducts()">โหลดสินค้าเพิ่มเติม</button></div>`
+    : '';
+
+  wrap.innerHTML = `
+    <table>
+      <thead>
+        <tr><th>สินค้า</th><th>ราคา</th><th>สต๊อก</th><th>สถานะ</th><th>จัดการ</th></tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    ${loadMoreBtn}
+  `;
+}
+
+async function saveStock(id){
+  const input = document.getElementById(`stock-${id}`);
+  const newStock = Number(input.value);
+  if (Number.isNaN(newStock) || newStock < 0) {
+    showToast('กรุณากรอกจำนวนสต๊อกให้ถูกต้อง', true);
+    return;
+  }
+  try {
+    await apiFetch(`/products/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ stock: newStock })
+    });
+    const p = allProducts.find(x => String(x.id) === String(id));
+    if (p) p.stock = newStock;
+    showToast('บันทึกสต๊อกสำเร็จ');
+    renderProductsTable();
+  } catch (err) {
+    showToast('บันทึกสต๊อกไม่สำเร็จ: ' + err.message, true);
+  }
+}
+
+function openProductModal(id){
+  const isEdit = id !== undefined && id !== null;
+  const p = isEdit ? allProducts.find(x => String(x.id) === String(id)) : null;
+  if (isEdit && !p) return;
+
+  document.getElementById('productModalTitle').textContent = isEdit ? 'แก้ไขสินค้า' : 'เพิ่มสินค้าใหม่';
+  document.getElementById('pf-id').value = isEdit ? p.id : '';
+  document.getElementById('pf-name').value = isEdit ? (p.name || '') : '';
+  document.getElementById('pf-image').value = isEdit ? (p.image || '') : '';
+  document.getElementById('pf-price').value = isEdit ? (p.price ?? 0) : '';
+  document.getElementById('pf-originalPrice').value = isEdit ? (p.originalPrice ?? '') : '';
+  document.getElementById('pf-stock').value = isEdit ? (p.stock ?? 0) : 0;
+  document.getElementById('pf-category').value = isEdit ? (p.category || '') : '';
+  document.getElementById('pf-brand').value = isEdit ? (p.brand || '') : '';
+  document.getElementById('pf-carBrand').value = isEdit ? (p.carBrand || '') : '';
+  document.getElementById('pf-badge').value = isEdit ? (p.badge || '') : '';
+  document.getElementById('pf-isActive').value = isEdit ? (p.isActive ? 'true' : 'false') : 'true';
+  document.getElementById('pf-description').value = isEdit ? (p.description || '') : '';
+  document.getElementById('pf-submit').textContent = isEdit ? 'บันทึกการแก้ไข' : 'เพิ่มสินค้า';
+  document.getElementById('productModalOverlay').classList.add('active');
+}
+
+function closeProductModal(){
+  document.getElementById('productModalOverlay').classList.remove('active');
+}
+
+document.getElementById('productForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('pf-id').value;
+  const isEdit = !!id;
+  const submitBtn = document.getElementById('pf-submit');
+  submitBtn.disabled = true;
+  submitBtn.textContent = isEdit ? 'กำลังบันทึก...' : 'กำลังเพิ่ม...';
+
+  const payload = {
+    name: document.getElementById('pf-name').value.trim(),
+    image: document.getElementById('pf-image').value.trim(),
+    price: Number(document.getElementById('pf-price').value),
+    originalPrice: document.getElementById('pf-originalPrice').value
+      ? Number(document.getElementById('pf-originalPrice').value) : null,
+    stock: Number(document.getElementById('pf-stock').value),
+    category: document.getElementById('pf-category').value.trim(),
+    brand: document.getElementById('pf-brand').value.trim() || undefined,
+    carBrand: document.getElementById('pf-carBrand').value.trim() || undefined,
+    badge: document.getElementById('pf-badge').value || null,
+    isActive: document.getElementById('pf-isActive').value === 'true',
+    description: document.getElementById('pf-description').value
+  };
+
+  try {
+    let result;
+    if (isEdit) {
+      result = await apiFetch(`/products/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+      });
+      const idx = allProducts.findIndex(p => String(p.id) === String(id));
+      if (idx !== -1) allProducts[idx] = { ...allProducts[idx], ...result.data };
+      showToast('แก้ไขสินค้าสำเร็จ');
+    } else {
+      result = await apiFetch('/products', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      // เพิ่มสินค้าใหม่ไว้บนสุดของตาราง แล้วเรนเดอร์ใหม่ทันที ไม่ต้องรีเฟรชหน้า
+      allProducts.unshift(result.data);
+      showToast('เพิ่มสินค้าใหม่สำเร็จ');
+    }
+    closeProductModal();
+    renderProductsTable();
+  } catch (err) {
+    showToast((isEdit ? 'แก้ไขสินค้าไม่สำเร็จ: ' : 'เพิ่มสินค้าไม่สำเร็จ: ') + err.message, true);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = isEdit ? 'บันทึกการแก้ไข' : 'เพิ่มสินค้า';
+  }
+});
+
+// ===== Users =====
+async function loadUsers(){
+  try {
+    const result = await apiFetch('/users');
+    allUsers = result.data || [];
+    renderUsersTable();
+  } catch (err) {
+    document.getElementById('users-table-wrap').innerHTML =
+      `<div class="empty">โหลดผู้ใช้งานไม่สำเร็จ: ${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function renderUsersTable(){
+  const wrap = document.getElementById('users-table-wrap');
+  const search = (document.getElementById('user-search')?.value || '').toLowerCase().trim();
+  const roleFilter = document.getElementById('role-filter')?.value || 'all';
+
+  let list = allUsers.filter(u =>
+    !search || (u.name || '').toLowerCase().includes(search) || (u.email || '').toLowerCase().includes(search)
+  );
+  if (roleFilter !== 'all') list = list.filter(u => String(u.role).toLowerCase() === roleFilter);
+
+  const counts = { admin: 0, manager: 0, user: 0 };
+  allUsers.forEach(u => { const r = String(u.role).toLowerCase(); if (counts[r] !== undefined) counts[r]++; });
+  document.getElementById('users-stats').innerHTML = `
+    <span class="stat-chip">ทั้งหมด <b>${allUsers.length}</b></span>
+    <span class="stat-chip">Admin <b>${counts.admin}</b></span>
+    <span class="stat-chip">Manager <b>${counts.manager}</b></span>
+    <span class="stat-chip">User <b>${counts.user}</b></span>
+  `;
+
+  if (!list.length) {
+    wrap.innerHTML = `<div class="empty">ไม่พบผู้ใช้งานที่ตรงกับเงื่อนไข</div>`;
+    return;
+  }
+
+  const currentUserId = String(getUser()?.id ?? getUser()?._id ?? '');
+
+  const rows = list.map(u => {
+    const badgeClass = ['admin','manager','user'].includes(String(u.role).toLowerCase())
+      ? `badge--${String(u.role).toLowerCase()}` : 'badge--user';
+    const isSelf = String(u.id) === currentUserId;
+    return `
+      <tr>
+        <td>
+          <div class="prod-name">${escapeHtml(u.name)}</div>
+          <div class="prod-brand">${escapeHtml(u.email)}</div>
+        </td>
+        <td><span class="badge ${badgeClass}">${escapeHtml(u.role)}</span></td>
+        <td><span class="badge ${u.isActive ? 'badge--active' : 'badge--inactive'}">${u.isActive ? 'ใช้งานอยู่' : 'ถูกระงับ'}</span></td>
+        <td>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <select class="role-select" id="role-${u.id}" ${isSelf ? 'disabled' : ''}>
+              <option value="user" ${u.role === 'user' ? 'selected' : ''}>user</option>
+              <option value="manager" ${u.role === 'manager' ? 'selected' : ''}>manager</option>
+              <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>admin</option>
+            </select>
+            <button class="btn btn--sm btn--primary" ${isSelf ? 'disabled title="ไม่สามารถแก้ไข role ของตัวเองได้"' : ''} onclick="saveUserRole(${u.id})">บันทึก</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  wrap.innerHTML = `
+    <table>
+      <thead><tr><th>ผู้ใช้งาน</th><th>Role ปัจจุบัน</th><th>สถานะ</th><th>เปลี่ยน Role</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+async function saveUserRole(id){
+  const select = document.getElementById(`role-${id}`);
+  const newRole = select.value;
+  try {
+    const result = await apiFetch(`/users/${id}/role`, {
+      method: 'PUT',
+      body: JSON.stringify({ role: newRole })
+    });
+    const u = allUsers.find(x => String(x.id) === String(id));
+    if (u) { u.role = result.data.role; u.roleId = result.data.roleId; }
+    showToast(`เปลี่ยน role ของ ${result.data.name} เป็น "${result.data.role}" สำเร็จ`);
+    renderUsersTable();
+  } catch (err) {
+    showToast('เปลี่ยน role ไม่สำเร็จ: ' + err.message, true);
+  }
+}
+
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+document.addEventListener('DOMContentLoaded', initDashboard);
+</script>
+</body>
+</html>

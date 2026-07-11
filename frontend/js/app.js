@@ -614,6 +614,38 @@ function showUserMenu(e) {
   
   const isSubpage = window.location.pathname.includes('/pages/');
   const pathPrefix = isSubpage ? '' : 'pages/';
+
+  // ตรวจสอบสิทธิ์ admin จาก role_id === 1 หรือ role === 'admin'
+  // รองรับหลายรูปแบบชื่อ field เผื่อ backend ส่งมาไม่ตรงกัน (role_id, roleId, role)
+  const roleIdValue = user ? (user.role_id ?? user.roleId ?? user.role_Id) : null;
+  const roleNameValue = user ? (user.role ?? user.roleName) : null;
+  const isAdmin = user && (
+    Number(roleIdValue) === 1 ||
+    String(roleNameValue).toLowerCase() === 'admin'
+  );
+
+  // Debug: เปิด console ดูค่า user ปัจจุบันเพื่อตรวจสอบว่าได้ field role_id/role มาจริงไหม
+  console.log('[showUserMenu] currentUser:', user);
+  console.log('[showUserMenu] roleIdValue:', roleIdValue, 'roleNameValue:', roleNameValue, 'isAdmin:', isAdmin);
+
+  const adminMenuHTML = isAdmin ? `
+    <div class="user-menu__divider"></div>
+    <a href="${pathPrefix}dashboard.html" class="user-menu__item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="9"/>
+        <rect x="14" y="3" width="7" height="5"/>
+        <rect x="14" y="12" width="7" height="9"/>
+        <rect x="3" y="16" width="7" height="5"/>
+      </svg>
+      Dashboard
+    </a>
+    <a href="${pathPrefix}mermaid.html" class="user-menu__item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 12h4l3-9 4 18 3-9h4"/>
+      </svg>
+      Mermaid
+    </a>
+  ` : '';
   
   menu.innerHTML = `
     <div class="user-menu__item user-menu__header">
@@ -634,6 +666,7 @@ function showUserMenu(e) {
       </svg>
       ประวัติการสั่งซื้อ
     </a>
+    ${adminMenuHTML}
     <div class="user-menu__divider"></div>
     <button class="user-menu__item" onclick="logoutUser();">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
