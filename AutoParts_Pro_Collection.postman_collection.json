@@ -6,151 +6,482 @@
   },
   "item": [
     {
-      "name": "1. GET All Products",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/products",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "products"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "2. POST Register User",
-      "event": [
+      "name": "1. Authentication (การยืนยันตัวตน)",
+      "item": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"Status Code should be 201\", function () {",
-              "    pm.response.to.have.status(201);",
-              "});",
-              "",
-              "pm.test(\"Response must be in JSON format\", function () {",
-              "    pm.response.to.be.json;",
-              "});",
-              "",
-              "pm.test(\"Check if JWT token exists\", function () {",
-              "    var jsonData = pm.response.json();",
-              "    pm.expect(jsonData.token).to.not.be.undefined;",
-              "    // Automatically save the token to environment variables if it exists",
-              "    if (jsonData.token) {",
-              "        pm.environment.set(\"token\", jsonData.token);",
-              "    }",
-              "});",
-              "",
-              "pm.test(\"Check success flag\", function () {",
-              "    var jsonData = pm.response.json();",
-              "    pm.expect(jsonData.success).to.eql(true);",
-              "});",
-              "",
-              "pm.test(\"Response time should be less than 2000ms\", function () {",
-              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-              "});"
+          "name": "สมัครสมาชิกใหม่ (Register - Customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status Code should be 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response must be in JSON format\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test(\"Check if JWT token exists\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.token).to.not.be.undefined;",
+                  "    if (jsonData.data.token) {",
+                  "        pm.environment.set(\"token\", jsonData.data.token);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
             ],
-            "type": "text/javascript"
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"name\": \"Somchai Test\",\n  \"email\": \"somchai_{{$timestamp}}@example.com\",\n  \"password\": \"password123\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"กฤษฎา ต้องไกรเลิศ\",\n  \"email\": \"postman@autopartspro.com\",\n  \"password\": \"password1234\",\n  \"phone\": \"0812345678\",\n  \"address\": \"มหาวิทยาลัยกรุงเทพ\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
             }
-          }
-        },
-        "url": {
-          "raw": "{{baseUrl}}/auth/register",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "auth",
-            "register"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "3. PUT Update Profile",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
           },
-          {
-            "key": "Authorization",
-            "value": "Bearer {{token}}",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"name\": \"Somchai Updated\"\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "response": []
         },
-        "url": {
-          "raw": "{{baseUrl}}/auth/profile",
-          "host": [
-            "{{baseUrl}}"
+        {
+          "name": "ล็อกอินลูกค้า (Login - Customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status Code should be 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Save Token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data.token) {",
+                  "        pm.environment.set(\"token\", jsonData.data.token);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
           ],
-          "path": [
-            "auth",
-            "profile"
-          ]
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"postman@autopartspro.com\",\n  \"password\": \"password1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ล็อกอินผู้จัดการ (Login - Manager)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status Code should be 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"manager@autopartspro.com\",\n  \"password\": \"manager123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ล็อกอินแอดมิน (Login - Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status Code should be 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Save Admin Token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data.token) {",
+                  "        pm.environment.set(\"token\", jsonData.data.token);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@autopartspro.th\",\n  \"password\": \"admin123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
     },
     {
-      "name": "4. DELETE Product (Admin)",
-      "request": {
-        "method": "DELETE",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{token}}",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/products/REPLACE_WITH_PRODUCT_ID",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "products",
-            "REPLACE_WITH_PRODUCT_ID"
-          ]
+      "name": "2. Products Catalog (แคตตาล็อกสินค้า)",
+      "item": [
+        {
+          "name": "ดึงข้อมูลอะไหล่ทั้งหมด (Get Products)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ค้นหาและกรองอะไหล่ (Search & Filter Products)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products?category=promotion&search=Flowforming",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "promotion"
+                },
+                {
+                  "key": "search",
+                  "value": "Flowforming"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "เพิ่มอะไหล่ใหม่ (Add Product - Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"โช๊คอัพสปอร์ต OHLINS DFV\",\n  \"description\": \"โช๊คอัพแต่งระดับพรีเมียม ปรับระดับความหนืดและสูงต่ำได้\",\n  \"brand\": \"OHLINS\",\n  \"carBrand\": \"BMW\",\n  \"price\": 85000,\n  \"originalPrice\": 95000,\n  \"image\": \"assets/images/products/ohlins.png\",\n  \"category\": \"new\",\n  \"badge\": \"hot\",\n  \"stock\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
+    },
+    {
+      "name": "3. Orders & Payment (การจองและชำระเงิน)",
+      "item": [
+        {
+          "name": "ดึงข้อมูลออเดอร์ทั้งหมด (Get Orders)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "สร้างออเดอร์จองอะไหล่ (Create Order - Pay Later)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"โอนเงินภายหลัง (แนบสลิป)\",\n  \"shippingAddress\": {\n    \"name\": \"กฤษฎา ต้องไกรเลิศ\",\n    \"phone\": \"0812345678\",\n    \"fullAddress\": \"123 SPU Road, Bangkok\"\n  },\n  \"items\": [\n    {\n      \"product\": \"REPLACE_WITH_PRODUCT_ID\",\n      \"quantity\": 1\n    }\n  ],\n  \"note\": \"ส่งช่วงบ่าย\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "แนบสลิปโอนเงิน (Submit Payment Slip)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slip\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/ใส่รหัสออเดอร์ที่นี่/submit-slip",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "ใส่รหัสออเดอร์ที่นี่",
+                "submit-slip"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ผู้จัดการตรวจสอบอนุมัติสลิป (Manager Approve Slip)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/manager/approve-slip/ใส่รหัสออเดอร์ที่นี่",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "manager",
+                "approve-slip",
+                "ใส่รหัสออเดอร์ที่นี่"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "แอดมินยืนยันยอดเงินสุดท้าย (Admin Final Confirm)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/confirm-order/ใส่รหัสออเดอร์ที่นี่",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "confirm-order",
+                "ใส่รหัสออเดอร์ที่นี่"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ผู้จัดการจัดส่งสินค้า (Manager Ship Order)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/manager/ship-order/ใส่รหัสออเดอร์ที่นี่",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "manager",
+                "ship-order",
+                "ใส่รหัสออเดอร์ที่นี่"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
