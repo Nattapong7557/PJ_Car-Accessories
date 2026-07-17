@@ -5,10 +5,10 @@
 | เวอร์ชัน | วันที่แก้ไข | ผู้จัดทำ | รายละเอียดการเปลี่ยนแปลง |
 | :---: | :---: | :---: | :---: |
 | 1.0 | 2026-07-17 | [Nattapong  jullaruji       67117379] | (Project Documentation) |
-| 2.0 | 2026-07-17 | [Kasidech  niamthong        67117355] 
-| 3.0 | 2026-07-17 | [Nuttawat  pinpun           67117324] 
-| 4.0 | 2026-07-17 | [Thanachon  chaengcharoen   67095854] 
-| 5.0 | 2026-07-17 | [Nantawat  sungnui          67108332] 
+| 2.0 | 2026-07-17 | [Kasidech  niamthong        67117355] | (Team Member) |
+| 3.0 | 2026-07-17 | [Nuttawat  pinpun           67117324] | (Team Member) |
+| 4.0 | 2026-07-17 | [Thanachon  chaengcharoen   67095854] | (Team Member) |
+| 5.0 | 2026-07-17 | [Nantawat  sungnui          67108332] | (Team Member) |
 
 ---
 
