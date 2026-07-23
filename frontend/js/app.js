@@ -743,12 +743,6 @@ function showUserMenu(e) {
       </svg>
       Dashboard
     </a>
-    <a href="${pathPrefix}mermaid.html" class="user-menu__item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 12h4l3-9 4 18 3-9h4"/>
-      </svg>
-      Mermaid
-    </a>
   ` : '';
   
   menu.innerHTML = `
@@ -773,12 +767,6 @@ function showUserMenu(e) {
     ${adminMenuHTML}
     <div class="user-menu__divider"></div>
     ${user.role === 'admin' ? `
-    <a href="#" class="user-menu__item" id="admin-mermaid-dropdown-btn" style="color: #ff6b35 !important; font-weight: bold;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-      </svg>
-      สถาปัตยกรรมระบบ (Mermaid)
-    </a>
     <div class="user-menu__divider"></div>
     ` : ''}
     <button class="user-menu__item" onclick="logoutUser();">
