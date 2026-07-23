@@ -153,6 +153,34 @@
     .status-msg {
       font-size: 0.8rem;
     }
+    .order-cancel-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--color-border);
+      flex-wrap: wrap;
+    }
+    .btn-cancel-order {
+      padding: 8px 20px;
+      font-size: 0.85rem;
+      border: 1.5px solid #e63946;
+      border-radius: 6px;
+      background: transparent;
+      color: #e63946;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-cancel-order:hover {
+      background: #e63946;
+      color: #fff;
+    }
+    .btn-cancel-order[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
     .order-info {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -262,7 +290,7 @@
         <select id="orderStatusFilter">
           <option value="all">สถานะทั้งหมด</option>
           <option value="pending">รอจัดส่ง</option>
-          <option value="processing">กำลังประมวลผล</option>
+          <option value="processing">กำลังจัดส่ง</option>
           <option value="completed">สำเร็จ</option>
           <option value="cancelled">ยกเลิก</option>
         </select>
@@ -402,7 +430,7 @@
 
       const statusLabels = {
         pending: 'รอจัดส่ง',
-        processing: 'กำลังประมวลผล',
+        processing: 'กำลังจัดส่ง',
         completed: 'สำเร็จ',
         cancelled: 'ยกเลิก'
       };
@@ -455,7 +483,7 @@
             <label for="status-select-${id}">ปรับสถานะการจัดส่ง:</label>
             <select id="status-select-${id}">
               <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>รอจัดส่ง</option>
-              <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>กำลังประมวลผล</option>
+              <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>กำลังจัดส่ง</option>
               <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>สำเร็จ</option>
               <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>ยกเลิก</option>
             </select>
@@ -539,14 +567,17 @@
 
       const statusLabels = {
         pending: 'รอจัดส่ง',
-        processing: 'กำลังประมวลผล',
-        completed: 'สำเร็จ'
+        processing: 'กำลังจัดส่ง',
+        completed: 'สำเร็จ',
+        cancelled: 'ยกเลิก'
       };
 
       // Reverse orders so that oldest (#1) comes first in display list
       const sortedOrders = [...orders].reverse();
 
-      content.innerHTML = sortedOrders.map((order, index) => `
+      content.innerHTML = sortedOrders.map((order, index) => {
+        const id = order.id ?? order._id;
+        return `
         <div class="order-card">
           <div class="order-header">
             <div class="order-id">สั่งซื้อสำเร็จ</div>
@@ -578,8 +609,59 @@
               </div>
             `).join('')}
           </div>
+          ${order.status === 'pending' ? `
+          <div class="order-cancel-row">
+            <button type="button" class="btn-cancel-order" id="cancel-btn-${id}" onclick="cancelMyOrder('${id}')">ยกเลิกคำสั่งซื้อ</button>
+            <span class="status-msg" id="cancel-msg-${id}"></span>
+          </div>
+          ` : ''}
         </div>
-      `).join('');
+        `;
+      }).join('');
+    }
+
+    async function cancelMyOrder(id) {
+      if (!confirm('ยืนยันยกเลิกคำสั่งซื้อนี้ใช่หรือไม่?')) return;
+
+      const button = document.getElementById(`cancel-btn-${id}`);
+      const msg = document.getElementById(`cancel-msg-${id}`);
+
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'กำลังยกเลิก...';
+      }
+
+      try {
+        const token = getAuthToken();
+        const response = await fetch(`/api/orders/${id}/cancel`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(data.message || 'ยกเลิกคำสั่งซื้อไม่สำเร็จ');
+        }
+
+        // โหลดรายการใหม่เพื่ออัปเดตสถานะและซ่อนปุ่มยกเลิก
+        loadOrders();
+      } catch (error) {
+        console.error('Error cancelling order:', error);
+        if (msg) {
+          msg.style.color = '#e63946';
+          msg.textContent = error.message;
+        } else {
+          alert(error.message);
+        }
+        if (button) {
+          button.disabled = false;
+          button.textContent = 'ยกเลิกคำสั่งซื้อ';
+        }
+      }
     }
   </script>
 </body>

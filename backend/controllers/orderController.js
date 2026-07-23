@@ -147,6 +147,59 @@ const getOrderById = async (req, res, next) => {
   }
 };
 
+// @desc    ยกเลิกคำสั่งซื้อของตัวเอง (ทำได้เฉพาะตอนสถานะยังเป็น "รอจัดส่ง" เท่านั้น)
+// @route   PUT /api/orders/:id/cancel
+// @access  Private
+const cancelOrder = async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'ไม่พบคำสั่งซื้อ'
+      });
+    }
+
+    // ยกเลิกได้เฉพาะเจ้าของออเดอร์เท่านั้น (manager/admin ใช้ endpoint ปรับสถานะแยกต่างหาก)
+    if (order.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'ไม่มีสิทธิ์ยกเลิกคำสั่งซื้อนี้'
+      });
+    }
+
+    // ยกเลิกได้เฉพาะตอนสถานะยังเป็น "รอจัดส่ง" เท่านั้น
+    // เมื่อร้านเริ่มดำเนินการ (กำลังจัดส่ง/สำเร็จ/ยกเลิกไปแล้ว) จะยกเลิกเองไม่ได้
+    if (order.status !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        message: 'ไม่สามารถยกเลิกคำสั่งซื้อนี้ได้ เนื่องจากร้านเริ่มดำเนินการจัดส่งแล้ว'
+      });
+    }
+
+    order.status = 'cancelled';
+    await order.save();
+
+    // คืนสต๊อกสินค้าที่ถูกตัดไปตอนสั่งซื้อ
+    for (const item of order.items || []) {
+      const product = await Product.findById(item.product);
+      if (product) {
+        product.stock += item.quantity;
+        await product.save();
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      data: order,
+      message: 'ยกเลิกคำสั่งซื้อสำเร็จ'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    อัปเดตสถานะ order (Manager/Admin)
 // @route   PUT /api/orders/:id/status
 // @access  Private/Manager,Admin
@@ -173,7 +226,7 @@ const updateOrderStatus = async (req, res, next) => {
 
     order.status = status;
     if (trackingNumber) order.trackingNumber = trackingNumber;
-    if (status === 'completed') order.deliveredAt = Date.now();
+    if (status === 'completed') order.deliveredAt = new Date();
 
     await order.save();
 
@@ -278,6 +331,7 @@ module.exports = {
   createOrder,
   getMyOrders,
   getOrderById,
+  cancelOrder,
   updateOrderStatus,
   getAllOrders
 };

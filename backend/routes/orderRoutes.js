@@ -4,6 +4,7 @@ const {
   createOrder,
   getMyOrders,
   getOrderById,
+  cancelOrder,
   updateOrderStatus,
   getAllOrders
 } = require('../controllers/orderController');
@@ -14,6 +15,7 @@ router.post('/', protect, createOrder);
 router.get('/', protect, getMyOrders);
 router.get('/admin/all', protect, managerOrAdmin, getAllOrders);
 router.get('/:id', protect, getOrderById);
+router.put('/:id/cancel', protect, cancelOrder);
 
 // Manager/Admin routes
 router.put('/:id/status', protect, managerOrAdmin, updateOrderStatus);
