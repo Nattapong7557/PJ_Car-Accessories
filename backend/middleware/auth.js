@@ -59,4 +59,16 @@ const adminOnly = (req, res, next) => {
   }
 };
 
-module.exports = { protect, adminOnly };
+// ตรวจสอบ role (manager หรือ admin) - ใช้กับงานจัดการออเดอร์ที่ manager ก็ทำได้
+const managerOrAdmin = (req, res, next) => {
+  if (req.user && (req.user.role === 'admin' || req.user.role === 'manager')) {
+    next();
+  } else {
+    return res.status(403).json({
+      success: false,
+      message: 'ไม่มีสิทธิ์เข้าถึง (Admin/Manager only)'
+    });
+  }
+};
+
+module.exports = { protect, adminOnly, managerOrAdmin };

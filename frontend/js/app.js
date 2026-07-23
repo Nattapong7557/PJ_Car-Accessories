@@ -668,6 +668,40 @@ function logoutUser() {
   location.reload();
 }
 
+// ==========================================
+// Role helpers (shared across pages)
+// รองรับหลายรูปแบบ field เผื่อ backend ส่งมาไม่ตรงกัน (role_id, roleId, role)
+// ตาม neon_schema.sql: 1 = admin, 2 = user, 3 = manager
+// ==========================================
+function getUserRoleName(user) {
+  if (!user) return null;
+  const roleId = user.role_id ?? user.roleId;
+  const roleName = user.role ?? user.roleName;
+
+  if (Number(roleId) === 1 || String(roleName).toLowerCase() === 'admin') return 'admin';
+  if (Number(roleId) === 3 || String(roleName).toLowerCase() === 'manager') return 'manager';
+  return 'user';
+}
+
+function isManagerOrAdmin(user) {
+  const role = getUserRoleName(user);
+  return role === 'admin' || role === 'manager';
+}
+
+// ==========================================
+// Track order status button (header)
+// ==========================================
+function handleTrackOrderClick() {
+  if (!isUserLoggedIn()) {
+    showNotification('กรุณาลงชื่อเข้าใช้เพื่อติดตามสถานะ');
+    return;
+  }
+
+  const isSubpage = window.location.pathname.includes('/pages/');
+  const pathPrefix = isSubpage ? '' : 'pages/';
+  window.location.href = pathPrefix + 'orders.html';
+}
+
 function updateAuthUI() {
   const loginBtn = document.getElementById('login-btn');
   const user = getCurrentUser();

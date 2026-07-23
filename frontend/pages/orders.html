@@ -80,6 +80,79 @@
       background: rgba(76, 175, 80, 0.2);
       color: #4caf50;
     }
+    .order-status.cancelled {
+      background: rgba(230, 57, 70, 0.2);
+      color: #e63946;
+    }
+    .order-customer {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin-top: 4px;
+    }
+    .manager-controls {
+      display: none;
+      margin-bottom: 24px;
+    }
+    .manager-controls__row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .manager-controls__row input,
+    .manager-controls__row select {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-card);
+      color: var(--color-text-primary);
+      font-size: 0.9rem;
+    }
+    .manager-controls__row input {
+      flex: 1;
+      min-width: 220px;
+    }
+    .order-status-update {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--color-border);
+      flex-wrap: wrap;
+    }
+    .order-status-update label {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+    .order-status-update select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-card);
+      color: var(--color-text-primary);
+      font-size: 0.85rem;
+    }
+    .btn-save-status {
+      padding: 8px 20px;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: 6px;
+      background: var(--color-accent-primary);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .btn-save-status:hover {
+      background: #ff8c5a;
+    }
+    .btn-save-status[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .status-msg {
+      font-size: 0.8rem;
+    }
     .order-info {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -183,6 +256,19 @@
       <p style="color: var(--color-text-secondary); margin-left: 56px;">ดูรายละเอียดการสั่งซื้อและสถานะการจัดส่ง</p>
     </div>
 
+    <div class="manager-controls" id="managerControls">
+      <div class="manager-controls__row">
+        <input type="text" id="orderSearchInput" placeholder="ค้นหาชื่อ หรือ อีเมลลูกค้า...">
+        <select id="orderStatusFilter">
+          <option value="all">สถานะทั้งหมด</option>
+          <option value="pending">รอจัดส่ง</option>
+          <option value="processing">กำลังประมวลผล</option>
+          <option value="completed">สำเร็จ</option>
+          <option value="cancelled">ยกเลิก</option>
+        </select>
+      </div>
+    </div>
+
     <div id="ordersContent">
       <div class="empty-orders">
         <div class="empty-orders-icon">📦</div>
@@ -204,7 +290,26 @@
       }
 
       updateAuthUI();
-      loadOrders();
+
+      const currentUser = getCurrentUser();
+
+      if (isManagerOrAdmin(currentUser)) {
+        // Manager / Admin: เห็นออเดอร์ของลูกค้าทุกคน และปรับสถานะการจัดส่งได้
+        document.querySelector('.orders-header h1').textContent = 'จัดการออเดอร์ทั้งหมด';
+        const subtitle = document.querySelector('.orders-header p');
+        if (subtitle) subtitle.textContent = 'ดูออเดอร์ของลูกค้าทั้งหมดและปรับสถานะการจัดส่ง';
+
+        const controls = document.getElementById('managerControls');
+        if (controls) controls.style.display = 'block';
+
+        document.getElementById('orderSearchInput')?.addEventListener('input', renderManagerOrders);
+        document.getElementById('orderStatusFilter')?.addEventListener('change', renderManagerOrders);
+
+        loadAllOrders();
+      } else {
+        // User ทั่วไป: เห็นเฉพาะออเดอร์ของตัวเอง
+        loadOrders();
+      }
     });
 
     async function loadOrders() {
@@ -225,6 +330,196 @@
       } catch (error) {
         console.error('Error loading orders:', error);
       }
+    }
+
+    // ============================================
+    // Manager / Admin: ดูออเดอร์ทั้งหมด + ปรับสถานะ
+    // ============================================
+    let managerOrdersCache = [];
+
+    async function loadAllOrders() {
+      const content = document.getElementById('ordersContent');
+      content.innerHTML = `
+        <div class="empty-orders">
+          <div class="empty-orders-icon">⏳</div>
+          <p class="empty-orders-text">กำลังโหลดออเดอร์ทั้งหมด...</p>
+        </div>
+      `;
+
+      try {
+        const token = getAuthToken();
+        const response = await fetch('/api/orders/admin/all', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          if (response.status === 403) {
+            throw new Error('คุณไม่มีสิทธิ์เข้าถึงข้อมูลนี้');
+          }
+          throw new Error('โหลดออเดอร์ไม่สำเร็จ');
+        }
+
+        const data = await response.json();
+        managerOrdersCache = data.data || [];
+        renderManagerOrders();
+      } catch (error) {
+        console.error('Error loading all orders:', error);
+        content.innerHTML = `
+          <div class="empty-orders">
+            <div class="empty-orders-icon">⚠️</div>
+            <h3 style="color: var(--color-text-primary); margin-bottom: 8px;">โหลดออเดอร์ไม่สำเร็จ</h3>
+            <p class="empty-orders-text">${escapeOrderHtml(error.message)}</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderManagerOrders() {
+      const content = document.getElementById('ordersContent');
+      const search = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('orderStatusFilter')?.value || 'all';
+
+      const list = managerOrdersCache.filter(order => {
+        const name = (order.user_name || order.customer_name || order.name || '').toLowerCase();
+        const email = (order.user_email || order.customer_email || order.email || '').toLowerCase();
+        const matchesSearch = !search || name.includes(search) || email.includes(search);
+        const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+        return matchesSearch && matchesStatus;
+      });
+
+      if (!list.length) {
+        content.innerHTML = `
+          <div class="empty-orders">
+            <div class="empty-orders-icon">📦</div>
+            <h3 style="color: var(--color-text-primary); margin-bottom: 8px;">ไม่พบออเดอร์</h3>
+            <p class="empty-orders-text">ไม่มีออเดอร์ที่ตรงกับเงื่อนไขการค้นหา</p>
+          </div>
+        `;
+        return;
+      }
+
+      const statusLabels = {
+        pending: 'รอจัดส่ง',
+        processing: 'กำลังประมวลผล',
+        completed: 'สำเร็จ',
+        cancelled: 'ยกเลิก'
+      };
+
+      const sortedOrders = [...list].sort((a, b) =>
+        new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt)
+      );
+
+      content.innerHTML = sortedOrders.map(order => {
+        const id = order.id ?? order._id;
+        const customerName = order.user_name || order.customer_name || order.name || 'ไม่ทราบชื่อ';
+        const customerEmail = order.user_email || order.customer_email || order.email || '';
+
+        return `
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <div class="order-id">ออเดอร์ #${escapeOrderHtml(id)}</div>
+              <div class="order-customer">${escapeOrderHtml(customerName)}${customerEmail ? ' · ' + escapeOrderHtml(customerEmail) : ''}</div>
+            </div>
+            <span class="order-status ${order.status}">${statusLabels[order.status] || order.status}</span>
+          </div>
+          <div class="order-info">
+            <div class="order-info-item">
+              <div class="order-info-label">วันสั่งซื้อ</div>
+              <div>${new Date(order.created_at || order.createdAt).toLocaleDateString('th-TH')}</div>
+            </div>
+            <div class="order-info-item">
+              <div class="order-info-label">จำนวนรวม</div>
+              <div>฿${order.total_amount || order.totalAmount || 0}</div>
+            </div>
+            <div class="order-info-item">
+              <div class="order-info-label">จำนวนสินค้า</div>
+              <div>${order.items?.length || 0} ชิ้น</div>
+            </div>
+          </div>
+          <div class="order-items-list" style="margin-top: 20px; border-top: 1px dashed var(--color-border); padding-top: 16px;">
+            <div class="order-info-label" style="margin-bottom: 12px;">รายการสินค้า</div>
+            ${(order.items || []).map(item => `
+              <div class="order-item" style="display: flex; gap: 16px; margin-bottom: 12px; align-items: center;">
+                <img src="../${item.image}" alt="${item.name}" onerror="this.src='../assets/images/placeholder.jpg'" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid var(--color-border); background: #fff;">
+                <div>
+                  <div style="font-weight: 600; color: var(--color-text-primary); font-size: 0.95rem; margin-bottom: 4px;">${item.name}</div>
+                  <div style="font-size: 0.85rem; color: var(--color-text-secondary);">จำนวน: ${item.quantity} ชิ้น | ราคาต่อชิ้น: ฿${item.price}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="order-status-update">
+            <label for="status-select-${id}">ปรับสถานะการจัดส่ง:</label>
+            <select id="status-select-${id}">
+              <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>รอจัดส่ง</option>
+              <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>กำลังประมวลผล</option>
+              <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>สำเร็จ</option>
+              <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>ยกเลิก</option>
+            </select>
+            <button type="button" class="btn-save-status" id="save-btn-${id}" onclick="updateOrderStatus('${id}')">บันทึกสถานะ</button>
+            <span class="status-msg" id="status-msg-${id}"></span>
+          </div>
+        </div>
+        `;
+      }).join('');
+    }
+
+    async function updateOrderStatus(id) {
+      const select = document.getElementById(`status-select-${id}`);
+      const button = document.getElementById(`save-btn-${id}`);
+      const msg = document.getElementById(`status-msg-${id}`);
+      const newStatus = select.value;
+
+      button.disabled = true;
+      button.textContent = 'กำลังบันทึก...';
+
+      try {
+        const token = getAuthToken();
+        const response = await fetch(`/api/orders/${id}/status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(data.message || 'อัปเดตสถานะไม่สำเร็จ');
+        }
+
+        const order = managerOrdersCache.find(o => String(o.id ?? o._id) === String(id));
+        if (order) order.status = newStatus;
+
+        if (msg) {
+          msg.style.color = '#4caf50';
+          msg.textContent = 'บันทึกสำเร็จ';
+        }
+
+        renderManagerOrders();
+      } catch (error) {
+        console.error('Error updating order status:', error);
+        if (msg) {
+          msg.style.color = '#e63946';
+          msg.textContent = error.message;
+        }
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.textContent = 'บันทึกสถานะ';
+        }
+      }
+    }
+
+    function escapeOrderHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
     }
 
     function displayOrders(orders) {
