@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const { pool } = require('../config/db');
 
 // @desc    สร้าง order ใหม่
 // @route   POST /api/orders
@@ -125,8 +126,12 @@ const getOrderById = async (req, res, next) => {
       });
     }
 
-    // ตรวจสอบว่าเป็น order ของ user หรือเป็น admin
-    if (order.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+    // ตรวจสอบว่าเป็น order ของ user เอง หรือเป็น admin/manager
+    if (
+      order.user.toString() !== req.user._id.toString() &&
+      req.user.role !== 'admin' &&
+      req.user.role !== 'manager'
+    ) {
       return res.status(403).json({
         success: false,
         message: 'ไม่มีสิทธิ์เข้าถึงคำสั่งซื้อนี้'
@@ -142,12 +147,73 @@ const getOrderById = async (req, res, next) => {
   }
 };
 
-// @desc    อัปเดตสถานะ order (Admin)
+// @desc    ยกเลิกคำสั่งซื้อของตัวเอง (ทำได้เฉพาะตอนสถานะยังเป็น "รอจัดส่ง" เท่านั้น)
+// @route   PUT /api/orders/:id/cancel
+// @access  Private
+const cancelOrder = async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'ไม่พบคำสั่งซื้อ'
+      });
+    }
+
+    // ยกเลิกได้เฉพาะเจ้าของออเดอร์เท่านั้น (manager/admin ใช้ endpoint ปรับสถานะแยกต่างหาก)
+    if (order.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'ไม่มีสิทธิ์ยกเลิกคำสั่งซื้อนี้'
+      });
+    }
+
+    // ยกเลิกได้เฉพาะตอนสถานะยังเป็น "รอจัดส่ง" เท่านั้น
+    // เมื่อร้านเริ่มดำเนินการ (กำลังจัดส่ง/สำเร็จ/ยกเลิกไปแล้ว) จะยกเลิกเองไม่ได้
+    if (order.status !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        message: 'ไม่สามารถยกเลิกคำสั่งซื้อนี้ได้ เนื่องจากร้านเริ่มดำเนินการจัดส่งแล้ว'
+      });
+    }
+
+    order.status = 'cancelled';
+    await order.save();
+
+    // คืนสต๊อกสินค้าที่ถูกตัดไปตอนสั่งซื้อ
+    for (const item of order.items || []) {
+      const product = await Product.findById(item.product);
+      if (product) {
+        product.stock += item.quantity;
+        await product.save();
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      data: order,
+      message: 'ยกเลิกคำสั่งซื้อสำเร็จ'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    อัปเดตสถานะ order (Manager/Admin)
 // @route   PUT /api/orders/:id/status
-// @access  Private/Admin
+// @access  Private/Manager,Admin
 const updateOrderStatus = async (req, res, next) => {
   try {
     const { status, trackingNumber } = req.body;
+
+    const allowedStatuses = ['pending', 'processing', 'completed', 'cancelled'];
+    if (!status || !allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `สถานะไม่ถูกต้อง (ต้องเป็นหนึ่งใน: ${allowedStatuses.join(', ')})`
+      });
+    }
 
     const order = await Order.findById(req.params.id);
 
@@ -160,7 +226,7 @@ const updateOrderStatus = async (req, res, next) => {
 
     order.status = status;
     if (trackingNumber) order.trackingNumber = trackingNumber;
-    if (status === 'delivered') order.deliveredAt = Date.now();
+    if (status === 'completed') order.deliveredAt = new Date();
 
     await order.save();
 
@@ -174,24 +240,77 @@ const updateOrderStatus = async (req, res, next) => {
   }
 };
 
-// @desc    ดึง orders ทั้งหมด (Admin)
+// @desc    ดึง orders ทั้งหมด พร้อมชื่อ/อีเมลลูกค้า (Manager/Admin)
 // @route   GET /api/orders/admin/all
-// @access  Private/Admin
+// @access  Private/Manager,Admin
 const getAllOrders = async (req, res, next) => {
   try {
-    const { page = 1, limit = 20, status } = req.query;
+    const { page = 1, limit = 20, status, search } = req.query;
 
-    const query = {};
-    if (status) query.status = status;
+    const conditions = [];
+    const whereValues = [];
+
+    if (status) {
+      conditions.push(`o.status = $${whereValues.length + 1}`);
+      whereValues.push(status);
+    }
+
+    if (search) {
+      conditions.push(`(u.name ILIKE $${whereValues.length + 1} OR u.email ILIKE $${whereValues.length + 2})`);
+      whereValues.push(`%${search}%`, `%${search}%`);
+    }
+
+    const whereClause = conditions.length ? ` WHERE ${conditions.join(' AND ')}` : '';
 
     const pageNum = Math.max(1, parseInt(page));
-    const limitNum = Math.min(50, Math.max(1, parseInt(limit)));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
     const skip = (pageNum - 1) * limitNum;
 
-    const [orders, total] = await Promise.all([
-      Order.find(query).sort({ createdAt: -1 }).skip(skip).limit(limitNum),
-      Order.countDocuments(query)
-    ]);
+    const { rows } = await pool.query(
+      `SELECT o.*, u.name AS user_name, u.email AS user_email
+       FROM orders o
+       LEFT JOIN users u ON o.user_id = u.id
+       ${whereClause}
+       ORDER BY o.created_at DESC
+       OFFSET $${whereValues.length + 1}
+       LIMIT $${whereValues.length + 2}`,
+      [...whereValues, skip, limitNum]
+    );
+
+    const { rows: countRows } = await pool.query(
+      `SELECT COUNT(*)::int AS count
+       FROM orders o
+       LEFT JOIN users u ON o.user_id = u.id
+       ${whereClause}`,
+      whereValues
+    );
+
+    const total = countRows[0].count;
+
+    const orders = rows.map((row) => ({
+      _id: row.id,
+      id: row.id,
+      user: row.user_id,
+      user_name: row.user_name,
+      user_email: row.user_email,
+      items: Array.isArray(row.items) ? row.items : [],
+      shippingAddress: typeof row.shipping_address === 'string' ? JSON.parse(row.shipping_address) : row.shipping_address || {},
+      paymentMethod: row.payment_method,
+      paymentStatus: row.payment_status,
+      subtotal: Number(row.subtotal),
+      shippingCost: Number(row.shipping_cost),
+      discount: Number(row.discount),
+      totalAmount: Number(row.total_amount),
+      total_amount: Number(row.total_amount),
+      status: row.status,
+      trackingNumber: row.tracking_number,
+      note: row.note,
+      paidAt: row.paid_at,
+      deliveredAt: row.delivered_at,
+      createdAt: row.created_at,
+      created_at: row.created_at,
+      updatedAt: row.updated_at
+    }));
 
     res.status(200).json({
       success: true,
@@ -212,6 +331,7 @@ module.exports = {
   createOrder,
   getMyOrders,
   getOrderById,
+  cancelOrder,
   updateOrderStatus,
   getAllOrders
 };
