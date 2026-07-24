@@ -18,6 +18,7 @@
 2. [สถาปัตยกรรมระบบ (System Architecture)](#2-สถาปัตยกรรมระบบ-system-architecture)
    - 2.1 [การวิเคราะห์และออกแบบ](#21-การวิเคราะห์และออกแบบ-analysis--design)
    - 2.2 [Class Diagram](#22-class-diagram)
+   - 2.3 [Sequence Diagrams](#23-sequence-diagrams)
 3. [โครงสร้างโปรเจกต์ (Project Structure)](#3-โครงสร้างโปรเจกต์-project-structure)
 4. [ความต้องการด้านฟังก์ชันการทำงาน (Functional Requirements)](#4-ความต้องการด้านฟังก์ชันการทำงาน-functional-requirements)
 5. [ความต้องการด้านที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)](#5-ความต้องการด้านที่ไม่ใช่ฟังก์ชัน-non-functional-requirements)
@@ -89,8 +90,13 @@ graph TD
 **[Screenshot ผลลัพธ์หน้าเว็บไซต์ / การทำงานของระบบ]**
 <img src="./frontend/assets/images/screenshot.png" alt="Screenshot Analysis & Design" width="800" />
 
-<<<<<<< HEAD
-### 2.2 ลำดับการทำงานของระบบ (Sequence Diagrams)
+### 2.2 Class Diagram
+
+แผนภาพ Class Diagram แสดงโครงสร้าง Model, Controller และความสัมพันธ์ระหว่าง Entity หลักของระบบ **AutoParts Pro**
+
+<img src="./docs/class_diagram.png" alt="Class Diagram — AutoParts Pro (E-Commerce for Car Accessories)" width="900" />
+
+### 2.3 ลำดับการทำงานของระบบ (Sequence Diagrams)
 
 กระบวนการไหลของข้อมูล (Data Flow) ตามบทบาทการใช้งาน (Roles) ทั้ง 3 บทบาท:
 
@@ -102,13 +108,6 @@ graph TD
 
 #### C. บทบาท Admin (ผู้ดูแลระบบสูงสุด) - การเพิ่มสินค้าใหม่และการสลับ Role สมาชิก
 ![Sequence Diagram Admin](sequence_diagram_admin.png)
-=======
-### 2.2 Class Diagram
-
-แผนภาพ Class Diagram แสดงโครงสร้าง Model, Controller และความสัมพันธ์ระหว่าง Entity หลักของระบบ **AutoParts Pro**
-
-<img src="./docs/class_diagram.png" alt="Class Diagram — AutoParts Pro (E-Commerce for Car Accessories)" width="900" />
->>>>>>> dfbbede43d073c5292867f61c8a0abd222cae7c8
 
 ---
 
