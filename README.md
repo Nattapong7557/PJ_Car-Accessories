@@ -87,6 +87,19 @@ graph TD
 **[Screenshot ผลลัพธ์หน้าเว็บไซต์ / การทำงานของระบบ]**
 <img src="./frontend/assets/images/screenshot.png" alt="Screenshot Analysis & Design" width="800" />
 
+### 2.2 ลำดับการทำงานของระบบ (Sequence Diagrams)
+
+กระบวนการไหลของข้อมูล (Data Flow) ตามบทบาทการใช้งาน (Roles) ทั้ง 3 บทบาท:
+
+#### A. บทบาท User (ลูกค้าทั่วไป) - การทำรายการสั่งซื้อและตรวจสอบประวัติ
+![Sequence Diagram User](sequence_diagram_user.png)
+
+#### B. บทบาท Manager (ผู้จัดการระบบ) - การดึงรายงานออเดอร์และการเปลี่ยนสถานะออเดอร์
+![Sequence Diagram Manager](sequence_diagram_manager.png)
+
+#### C. บทบาท Admin (ผู้ดูแลระบบสูงสุด) - การเพิ่มสินค้าใหม่และการสลับ Role สมาชิก
+![Sequence Diagram Admin](sequence_diagram_admin.png)
+
 ---
 
 ## 3. โครงสร้างโปรเจกต์ (Project Structure)
