@@ -16,6 +16,8 @@
 ## สารบัญ
 1. [ภาพรวมโครงการ](#1-ภาพรวมโครงการ)
 2. [สถาปัตยกรรมระบบ (System Architecture)](#2-สถาปัตยกรรมระบบ-system-architecture)
+   - 2.1 [การวิเคราะห์และออกแบบ](#21-การวิเคราะห์และออกแบบ-analysis--design)
+   - 2.2 [Class Diagram](#22-class-diagram)
 3. [โครงสร้างโปรเจกต์ (Project Structure)](#3-โครงสร้างโปรเจกต์-project-structure)
 4. [ความต้องการด้านฟังก์ชันการทำงาน (Functional Requirements)](#4-ความต้องการด้านฟังก์ชันการทำงาน-functional-requirements)
 5. [ความต้องการด้านที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)](#5-ความต้องการด้านที่ไม่ใช่ฟังก์ชัน-non-functional-requirements)
@@ -86,6 +88,12 @@ graph TD
 
 **[Screenshot ผลลัพธ์หน้าเว็บไซต์ / การทำงานของระบบ]**
 <img src="./frontend/assets/images/screenshot.png" alt="Screenshot Analysis & Design" width="800" />
+
+### 2.2 Class Diagram
+
+แผนภาพ Class Diagram แสดงโครงสร้าง Model, Controller และความสัมพันธ์ระหว่าง Entity หลักของระบบ **AutoParts Pro**
+
+<img src="./docs/class_diagram.png" alt="Class Diagram — AutoParts Pro (E-Commerce for Car Accessories)" width="900" />
 
 ---
 
