@@ -28,35 +28,6 @@
 
 ---
 
-## 9. Class Diagram
-
-> **Class Diagram** แสดงโครงสร้างของระบบ AutoParts Pro ครอบคลุม Models, Controllers, Middleware และความสัมพันธ์ระหว่าง Class ทั้งหมด
-
-### สัญลักษณ์
-
-| Symbol | ความหมาย |
-|:------:|----------|
-| `+` | Public — เรียกได้จากภายนอก class |
-| `-` | Private — เรียกได้เฉพาะภายใน class |
-| `◆──` | Composition — OrderItem อยู่ใน Order (JSONB embedded) |
-| `──▷` | Association — ความสัมพันธ์ระหว่าง class |
-| `- - ▷` | Dependency — Controller/Middleware ใช้งาน Model |
-
-### Diagram
-
-![Class Diagram — AutoParts Pro](docs/class_diagram.png)
-
-### คลาสทั้งหมดในระบบ
-
-| กลุ่ม | Classes |
-|-------|---------|
-| **Models** | `User`, `Product`, `Order`, `OrderItem`, `ProductReview` |
-| **DB Tables** | `Role`, `PartBrand`, `CarBrand` |
-| **Controllers** | `AuthController`, `ProductController`, `OrderController`, `UserController` |
-| **Middleware** | `AuthMiddleware` |
-
----
-
 ## 1. ภาพรวมโครงการ
 
 **AutoParts Pro** เป็นแพลตฟอร์ม E-Commerce สำหรับจัดจำหน่ายอุปกรณ์แต่งรถยนต์และอะไหล่รถยนต์แบบครบวงจร โดยมีเป้าหมายเพื่ออำนวยความสะดวกให้ผู้ที่รักการแต่งรถสามารถค้นหา เปรียบเทียบ และสั่งซื้อสินค้าได้อย่างรวดเร็วและปลอดภัยผ่านระบบออนไลน์
@@ -343,3 +314,32 @@ npm start
 ### 8.7 หลักฐานประกอบการทดสอบ (Test Evidence)
 
 หลักฐานภาพหน้าจอจากการทดสอบจริงบนเว็บไซต์ ถูกจัดเก็บและอ้างอิงเพิ่มเติมในรายงาน UAT ฉบับเต็ม (Word/PDF) ประกอบด้วย: หน้ารายการสินค้าแนะนำ, หน้ารายละเอียดสินค้า, หน้าตะกร้าสินค้า, หน้าชำระเงินด้วย QR, หน้าประวัติคำสั่งซื้อของลูกค้า, หน้าผลการค้นหาบางส่วน ("สปอย"), หน้าแก้ไขโปรไฟล์ และหน้าจัดการออเดอร์ฝั่งผู้ดูแลระบบ
+
+---
+
+## 9. Class Diagram
+
+> **Class Diagram** แสดงโครงสร้างของระบบ AutoParts Pro ครอบคลุม Models, Controllers, Middleware และความสัมพันธ์ระหว่าง Class ทั้งหมด
+
+### สัญลักษณ์
+
+| Symbol | ความหมาย |
+|:------:|----------|
+| `+` | Public — เรียกได้จากภายนอก class |
+| `-` | Private — เรียกได้เฉพาะภายใน class |
+| `◆──` | Composition — OrderItem อยู่ใน Order (JSONB embedded) |
+| `──▷` | Association — ความสัมพันธ์ระหว่าง class |
+| `- - ▷` | Dependency — Controller/Middleware ใช้งาน Model |
+
+### Diagram
+
+![Class Diagram — AutoParts Pro](docs/class_diagram.png)
+
+### คลาสทั้งหมดในระบบ
+
+| กลุ่ม | Classes |
+|-------|---------|
+| **Models** | `User`, `Product`, `Order`, `OrderItem`, `ProductReview` |
+| **DB Tables** | `Role`, `PartBrand`, `CarBrand` |
+| **Controllers** | `AuthController`, `ProductController`, `OrderController`, `UserController` |
+| **Middleware** | `AuthMiddleware` |
