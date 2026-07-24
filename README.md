@@ -130,6 +130,76 @@ PJ_Car-Accessories/
 
 ---
 
+## Use Case Diagram
+
+### Actors
+
+| Actor | Role | คำอธิบาย |
+|-------|------|----------|
+| **User** | `user` | สมาชิกทั่วไป — ดูสินค้า, สั่งซื้อ, จัดการโปรไฟล์ |
+| **Manager** | `manager` | ผู้จัดการ — สิทธิ์ User + จัดการคำสั่งซื้อทั้งระบบ |
+| **Admin** | `admin` | ผู้ดูแลระบบ — สิทธิ์สูงสุด + จัดการสินค้า, ผู้ใช้, Dashboard |
+
+### Diagram
+
+<img src="./usecase_diagram.png" alt="Use Case Diagram - AutoParts Pro" width="900" />
+
+### Include Relationships
+
+> **Include** = พฤติกรรมย่อยที่ต้องทำเสมอเมื่อเรียกใช้ Use Case หลัก
+
+| Base Use Case | Include | เหตุผล |
+|---------------|---------|--------|
+| Login | Authenticate JWT | ระบบต้อง verify password + ออก JWT Token ทุกครั้ง |
+| Checkout | Verify Stock | ระบบต้องเช็คว่าสินค้ามีเพียงพอก่อนสร้างออเดอร์ |
+| Checkout | Calculate VAT 7% | ระบบต้องคำนวณภาษีมูลค่าเพิ่ม 7% ทุกครั้งที่สั่งซื้อ |
+| Cancel Order | Restore Stock | เมื่อยกเลิก ระบบต้องคืนสต็อกที่ตัดไปอัตโนมัติ |
+
+### Extend Relationships
+
+> **Extend** = พฤติกรรมเสริมที่อาจเกิดหรือไม่เกิดก็ได้ (ทางเลือก)
+
+| Extending Use Case | Base Use Case | เหตุผล |
+|--------------------|---------------|--------|
+| Search Products | Browse Products | ผู้ใช้อาจค้นหาเพิ่มเติมหรือไม่ก็ได้ |
+| Filter Products | Browse Products | ผู้ใช้อาจกรองหมวดหมู่/ราคาหรือไม่ก็ได้ |
+| View Reviews | View Product Detail | ผู้ใช้อาจดูรีวิวเพิ่มเติมหรือไม่ก็ได้ |
+| Add Tracking | Update Order Status | Manager/Admin อาจเพิ่ม tracking หรือไม่ก็ได้ |
+| Change Password | Manage Profile | ผู้ใช้อาจเปลี่ยนรหัสผ่านเพิ่มเติมหรือไม่ก็ได้ |
+
+### Use Case List
+
+| ID | Use Case | Actor | API |
+|----|----------|-------|-----|
+| UC-01 | Register (สมัครสมาชิก) | User | `POST /api/auth/register` |
+| UC-02 | Login (เข้าสู่ระบบ) | User | `POST /api/auth/login` |
+| UC-03 | Browse Products (ดูรายการสินค้า) | User | `GET /api/products` |
+| UC-04 | Search Products (ค้นหาสินค้า) | User | `GET /api/products?search=...` |
+| UC-05 | Filter Products (กรองสินค้า) | User | `GET /api/products?category=...` |
+| UC-06 | View Product Detail (ดูรายละเอียด) | User | `GET /api/products/:id` |
+| UC-07 | View Reviews (ดูรีวิว) | User | `GET /api/products/:id/reviews` |
+| UC-08 | Add Review (เขียนรีวิว) | User | `POST /api/products/:id/reviews` |
+| UC-09 | Add to Cart (เพิ่มลงตะกร้า) | User | Frontend (localStorage) |
+| UC-10 | Manage Cart (จัดการตะกร้า) | User | Frontend (cart.html) |
+| UC-11 | Checkout (สั่งซื้อสินค้า) | User | `POST /api/orders` |
+| UC-12 | View My Orders (ดูคำสั่งซื้อ) | User | `GET /api/orders` |
+| UC-13 | View Order Detail (ดูรายละเอียด) | User | `GET /api/orders/:id` |
+| UC-14 | Cancel Order (ยกเลิกคำสั่งซื้อ) | User | `PUT /api/orders/:id/cancel` |
+| UC-15 | View Profile (ดูข้อมูลส่วนตัว) | User | `GET /api/auth/me` |
+| UC-16 | Manage Profile (แก้ไขโปรไฟล์) | User | `PUT /api/auth/profile` |
+| UC-17 | Change Password (เปลี่ยนรหัสผ่าน) | User | `PUT /api/auth/password` |
+| UC-18 | View All Orders (ดูคำสั่งซื้อทั้งหมด) | Manager, Admin | `GET /api/orders/admin/all` |
+| UC-19 | Update Order Status (อัปเดตสถานะ) | Manager, Admin | `PUT /api/orders/:id/status` |
+| UC-20 | Add Tracking (เพิ่มเลข Tracking) | Manager, Admin | `PUT /api/orders/:id/status` |
+| UC-21 | Add Product (เพิ่มสินค้า) | Admin | `POST /api/products` |
+| UC-22 | Edit Product (แก้ไขสินค้า) | Admin | `PUT /api/products/:id` |
+| UC-23 | Delete Product (ลบสินค้า) | Admin | `DELETE /api/products/:id` |
+| UC-24 | Manage Users (จัดการผู้ใช้) | Admin | `GET /api/users` |
+| UC-25 | Change User Role (เปลี่ยน Role) | Admin | `PUT /api/users/:id/role` |
+| UC-26 | View Dashboard (ดู Dashboard) | Admin | Frontend (dashboard.html) |
+
+---
+
 ## 4. ความต้องการด้านฟังก์ชันการทำงาน (Functional Requirements)
 
 ### 4.1 ระบบหน้าเว็บสำหรับลูกค้า (Customer Frontend)
