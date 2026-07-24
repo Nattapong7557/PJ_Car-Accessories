@@ -28,6 +28,7 @@
 8. [User Acceptance Testing (UAT)](#8-user-acceptance-testing-uat)
    - 8.6 [สรุปจำนวนกรณีทดสอบและข้อบกพร่องที่พบ](#86-สรุปจำนวนกรณีทดสอบและข้อบกพร่องที่พบ-test-coverage--issue-log)
    - 8.7 [หลักฐานประกอบการทดสอบ](#87-หลักฐานประกอบการทดสอบ-test-evidence)
+9. [ไฟล์โครงสร้างฐานข้อมูล (schema.sql)](./backend/sql/neon_schema.sql)
 
 ---
 
