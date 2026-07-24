@@ -277,7 +277,20 @@ npm start
 
 ## 8. User Acceptance Testing (UAT)
 
+📄 **เอกสารประกอบการทดสอบ (Test Reports):**
+- [รายงานผลการทดสอบการยอมรับของผู้ใช้ (UAT Report PDF)](./Report_UAT_AutoParts.pdf)
+- [รายงานการทดสอบ API ด้วย Postman (Postman Report PDF)](./Report_Postman_AutoParts.pdf)
+
+<p align="center">
+  <object data="./Report_UAT_AutoParts.pdf" type="application/pdf" width="100%" height="800px">
+    <iframe src="./Report_UAT_AutoParts.pdf" width="100%" height="800px" style="border: none;">
+      This browser does not support PDFs. Please download the PDF to view it: <a href="./Report_UAT_AutoParts.pdf">Download PDF</a>
+    </iframe>
+  </object>
+</p>
+
 ### 8.1 หลักการออกแบบ
+
 
 การทดสอบ User Acceptance Testing (UAT) ของระบบ **AutoParts Pro** ออกแบบขึ้นโดยอ้างอิงจาก Persona ผู้ใช้งานจริงและความต้องการเชิงฟังก์ชัน (Functional Requirements) ที่ระบุไว้ในหัวข้อที่ 4 ของเอกสารฉบับนี้ โดยดำเนินการทดสอบในรูปแบบ Manual Testing ผ่านเครื่องมือ Postman ควบคู่กับการใช้งานจริงผ่านหน้าเว็บไซต์ (Frontend) เพื่อยืนยันว่าระบบสามารถทำงานได้ตรงตามความต้องการของผู้ใช้งานแต่ละกลุ่มก่อนส่งมอบ
 
@@ -353,7 +366,7 @@ npm start
 
 ทีมผู้พัฒนาดำเนินการทดสอบจริงผ่าน 2 ช่องทางประกอบกัน เพื่อให้ครอบคลุมทั้งระดับ API และระดับ Workflow ที่ผู้ใช้งานจะพบเจอจริง:
 
-1. **Functional Test / API Level** — ใช้ Postman Collection (`AutoParts_Pro_Collection_postman_collection.json`) ร่วมกับ Environment (`AutoParts_Local.postman_environment.json`) ทดสอบยิง request ตรงไปยัง Endpoint ต่างๆ ตาม Test Case ที่ออกแบบไว้ในข้อ 8.3 และสรุปผลไว้ในรายงาน `Report_Postman_AutoParts.pdf`
+1. **Functional Test / API Level** — ใช้ Postman Collection (`AutoParts_Pro_Collection_postman_collection.json`) ร่วมกับ Environment (`AutoParts_Local.postman_environment.json`) ทดสอบยิง request ตรงไปยัง Endpoint ต่างๆ ตาม Test Case ที่ออกแบบไว้ในข้อ 8.3 และสรุปผลไว้ในรายงาน [`Report_Postman_AutoParts.pdf`](./Report_Postman_AutoParts.pdf)
 2. **Workflow / Business Process Test** — จำลองการใช้งานจริงผ่านหน้าเว็บไซต์ (`login.html` → `product.html` → `cart.html` → `orders.html`) ตามลำดับ Flow ของแต่ละ Persona เพื่อยืนยันว่า Frontend และ Backend ทำงานสอดคล้องกันตลอดกระบวนการ ไม่ใช่แค่ระดับ API เดี่ยวๆ
 3. **Non-Functional Test (Performance)** — ใช้ Apache JMeter ผ่านไฟล์ทดสอบ `checkout_load_test_500users.jmx` จำลองผู้ใช้งานยิง request เข้าสู่กระบวนการ Checkout พร้อมกันจำนวนมาก เพื่อตรวจสอบว่าระบบตัดสต๊อกสินค้าและสร้างออเดอร์ได้อย่างถูกต้อง ไม่เกิด Race Condition เมื่อมีผู้ใช้งานพร้อมกันจำนวนมาก
 
@@ -397,4 +410,4 @@ npm start
 
 ### 8.7 หลักฐานประกอบการทดสอบ (Test Evidence)
 
-หลักฐานภาพหน้าจอจากการทดสอบจริงบนเว็บไซต์ ถูกจัดเก็บและอ้างอิงเพิ่มเติมในรายงาน UAT ฉบับเต็ม (Word/PDF) ประกอบด้วย: หน้ารายการสินค้าแนะนำ, หน้ารายละเอียดสินค้า, หน้าตะกร้าสินค้า, หน้าชำระเงินด้วย QR, หน้าประวัติคำสั่งซื้อของลูกค้า, หน้าผลการค้นหาบางส่วน ("สปอย"), หน้าแก้ไขโปรไฟล์ และหน้าจัดการออเดอร์ฝั่งผู้ดูแลระบบ
+หลักฐานภาพหน้าจอจากการทดสอบจริงบนเว็บไซต์ ถูกจัดเก็บและอ้างอิงเพิ่มเติมใน [รายงาน UAT ฉบับเต็ม (PDF)](./Report_UAT_AutoParts.pdf) ประกอบด้วย: หน้ารายการสินค้าแนะนำ, หน้ารายละเอียดสินค้า, หน้าตะกร้าสินค้า, หน้าชำระเงินด้วย QR, หน้าประวัติคำสั่งซื้อของลูกค้า, หน้าผลการค้นหาบางส่วน ("สปอย"), หน้าแก้ไขโปรไฟล์ และหน้าจัดการออเดอร์ฝั่งผู้ดูแลระบบ
