@@ -281,13 +281,6 @@ npm start
 - [รายงานผลการทดสอบการยอมรับของผู้ใช้ (UAT Report PDF)](./Report_UAT_AutoParts.pdf)
 - [รายงานการทดสอบ API ด้วย Postman (Postman Report PDF)](./Report_Postman_AutoParts.pdf)
 
-<p align="center">
-  <object data="./Report_UAT_AutoParts.pdf" type="application/pdf" width="100%" height="800px">
-    <iframe src="./Report_UAT_AutoParts.pdf" width="100%" height="800px" style="border: none;">
-      This browser does not support PDFs. Please download the PDF to view it: <a href="./Report_UAT_AutoParts.pdf">Download PDF</a>
-    </iframe>
-  </object>
-</p>
 
 ### 8.1 หลักการออกแบบ
 
