@@ -17,7 +17,8 @@
 1. [ภาพรวมโครงการ](#1-ภาพรวมโครงการ)
 2. [สถาปัตยกรรมระบบ (System Architecture)](#2-สถาปัตยกรรมระบบ-system-architecture)
    - 2.1 [การวิเคราะห์และออกแบบ](#21-การวิเคราะห์และออกแบบ-analysis--design)
-   - 2.2 [Class Diagram](#22-class-diagram)
+   - 2.2 [Use Case Diagram](#22-use-case-diagram)
+   - 2.3 [Class Diagram](#23-class-diagram)
 3. [โครงสร้างโปรเจกต์ (Project Structure)](#3-โครงสร้างโปรเจกต์-project-structure)
 4. [ความต้องการด้านฟังก์ชันการทำงาน (Functional Requirements)](#4-ความต้องการด้านฟังก์ชันการทำงาน-functional-requirements)
 5. [ความต้องการด้านที่ไม่ใช่ฟังก์ชัน (Non-Functional Requirements)](#5-ความต้องการด้านที่ไม่ใช่ฟังก์ชัน-non-functional-requirements)
@@ -89,7 +90,68 @@ graph TD
 **[Screenshot ผลลัพธ์หน้าเว็บไซต์ / การทำงานของระบบ]**
 <img src="./frontend/assets/images/screenshot.png" alt="Screenshot Analysis & Design" width="800" />
 
-### 2.2 Class Diagram
+### 2.2 Use Case Diagram
+
+แผนภาพ Use Case Diagram แสดงการตอบสนองความต้องการของผู้ใช้ในระบบ **AutoParts Pro**
+
+<img src="./usecase_diagram.png" alt="Use Case Diagram — AutoParts Pro" width="900" />
+
+#### Actors
+| Actor | Role | คำอธิบาย |
+|-------|------|----------|
+| **User** | `user` | สมาชิกทั่วไป — ดูสินค้า, สั่งซื้อ, จัดการโปรไฟล์ |
+| **Manager** | `manager` | ผู้จัดการ — สิทธิ์ User + จัดการคำสั่งซื้อทั้งระบบ |
+| **Admin** | `admin` | ผู้ดูแลระบบ — สิทธิ์สูงสุด + จัดการสินค้า, ผู้ใช้, Dashboard |
+
+#### Relationships
+##### Include (พฤติกรรมย่อยที่ต้องทำเสมอ)
+| Base Use Case | Relationships | Included Use Case | คำอธิบาย |
+|---------------|:-------------:|-------------------|----------|
+| Login | `<<include>>` | Authenticate JWT | ระบบต้อง verify password + ออก JWT Token ทุกครั้ง |
+| Checkout | `<<include>>` | Verify Stock | ระบบต้องเช็คว่าสินค้ามีเพียงพอก่อนสร้างออเดอร์ |
+| Checkout | `<<include>>` | Calculate VAT 7% | ระบบต้องคำนวณภาษีมูลค่าเพิ่ม 7% ทุกครั้งที่สั่งซื้อ |
+| Cancel Order | `<<include>>` | Restore Stock | เมื่อยกเลิก ระบบต้องคืนสต็อกที่ตัดไปอัตโนมัติ |
+
+##### Extend (พฤติกรรมเสริมที่เป็นทางเลือก)
+| Extending Use Case | Relationships | Base Use Case | คำอธิบาย |
+|--------------------|:-------------:|---------------|----------|
+| Search Products | `<<extend>>` | Browse Products | ผู้ใช้อาจค้นหาเพิ่มเติมหรือไม่ก็ได้ |
+| Filter Products | `<<extend>>` | Browse Products | ผู้ใช้อาจกรองหมวดหมู่/ราคาหรือไม่ก็ได้ |
+| View Reviews | `<<extend>>` | View Product Detail | ผู้ใช้อาจดูรีวิวเพิ่มเติมหรือไม่ก็ได้ |
+| Add Tracking | `<<extend>>` | Update Order Status | Manager/Admin อาจเพิ่ม tracking หรือไม่ก็ได้ |
+| Change Password | `<<extend>>` | Manage Profile | ผู้ใช้อาจเปลี่ยนรหัสผ่านเพิ่มเติมหรือไม่ก็ได้ |
+
+##### Use Case List
+| ID | Use Case | Actor | API |
+|----|----------|-------|-----|
+| UC-01 | Register (สมัครสมาชิก) | User | `POST /api/auth/register` |
+| UC-02 | Login (เข้าสู่ระบบ) | User | `POST /api/auth/login` |
+| UC-03 | Browse Products (ดูรายการสินค้า) | User | `GET /api/products` |
+| UC-04 | Search Products (ค้นหาสินค้า) | User | `GET /api/products?search=...` |
+| UC-05 | Filter Products (กรองสินค้า) | User | `GET /api/products?category=...` |
+| UC-06 | View Product Detail (ดูรายละเอียด) | User | `GET /api/products/:id` |
+| UC-07 | View Reviews (ดูรีวิว) | User | `GET /api/products/:id/reviews` |
+| UC-08 | Add Review (เขียนรีวิว) | User | `POST /api/products/:id/reviews` |
+| UC-09 | Add to Cart (เพิ่มลงตะกร้า) | User | Frontend (localStorage) |
+| UC-10 | Manage Cart (จัดการตะกร้า) | User | Frontend (cart.html) |
+| UC-11 | Checkout (สั่งซื้อสินค้า) | User | `POST /api/orders` |
+| UC-12 | View My Orders (ดูคำสั่งซื้อ) | User | `GET /api/orders` |
+| UC-13 | View Order Detail (ดูรายละเอียด) | User | `GET /api/orders/:id` |
+| UC-14 | Cancel Order (ยกเลิกคำสั่งซื้อ) | User | `PUT /api/orders/:id/cancel` |
+| UC-15 | View Profile (ดูข้อมูลส่วนตัว) | User | `GET /api/auth/me` |
+| UC-16 | Manage Profile (แก้ไขโปรไฟล์) | User | `PUT /api/auth/profile` |
+| UC-17 | Change Password (เปลี่ยนรหัสผ่าน) | User | `PUT /api/auth/password` |
+| UC-18 | View All Orders (ดูคำสั่งซื้อทั้งหมด) | Manager, Admin | `GET /api/orders/admin/all` |
+| UC-19 | Update Order Status (อัปเดตสถานะ) | Manager, Admin | `PUT /api/orders/:id/status` |
+| UC-20 | Add Tracking (เพิ่มเลข Tracking) | Manager, Admin | `PUT /api/orders/:id/status` |
+| UC-21 | Add Product (เพิ่มสินค้า) | Admin | `POST /api/products` |
+| UC-22 | Edit Product (แก้ไขสินค้า) | Admin | `PUT /api/products/:id` |
+| UC-23 | Delete Product (ลบสินค้า) | Admin | `DELETE /api/products/:id` |
+| UC-24 | Manage Users (จัดการผู้ใช้) | Admin | `GET /api/users` |
+| UC-25 | Change User Role (เปลี่ยน Role) | Admin | `PUT /api/users/:id/role` |
+| UC-26 | View Dashboard (ดู Dashboard) | Admin | Frontend (dashboard.html) |
+
+### 2.3 Class Diagram
 
 แผนภาพ Class Diagram แสดงโครงสร้าง Model, Controller และความสัมพันธ์ระหว่าง Entity หลักของระบบ **AutoParts Pro**
 
