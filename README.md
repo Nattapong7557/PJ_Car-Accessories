@@ -24,6 +24,36 @@
 8. [User Acceptance Testing (UAT)](#8-user-acceptance-testing-uat)
    - 8.6 [สรุปจำนวนกรณีทดสอบและข้อบกพร่องที่พบ](#86-สรุปจำนวนกรณีทดสอบและข้อบกพร่องที่พบ-test-coverage--issue-log)
    - 8.7 [หลักฐานประกอบการทดสอบ](#87-หลักฐานประกอบการทดสอบ-test-evidence)
+9. [Class Diagram](#9-class-diagram)
+
+---
+
+## 9. Class Diagram
+
+> **Class Diagram** แสดงโครงสร้างของระบบ AutoParts Pro ครอบคลุม Models, Controllers, Middleware และความสัมพันธ์ระหว่าง Class ทั้งหมด
+
+### สัญลักษณ์
+
+| Symbol | ความหมาย |
+|:------:|----------|
+| `+` | Public — เรียกได้จากภายนอก class |
+| `-` | Private — เรียกได้เฉพาะภายใน class |
+| `◆──` | Composition — OrderItem อยู่ใน Order (JSONB embedded) |
+| `──▷` | Association — ความสัมพันธ์ระหว่าง class |
+| `- - ▷` | Dependency — Controller/Middleware ใช้งาน Model |
+
+### Diagram
+
+![Class Diagram — AutoParts Pro](docs/class_diagram.png)
+
+### คลาสทั้งหมดในระบบ
+
+| กลุ่ม | Classes |
+|-------|---------|
+| **Models** | `User`, `Product`, `Order`, `OrderItem`, `ProductReview` |
+| **DB Tables** | `Role`, `PartBrand`, `CarBrand` |
+| **Controllers** | `AuthController`, `ProductController`, `OrderController`, `UserController` |
+| **Middleware** | `AuthMiddleware` |
 
 ---
 
