@@ -61,10 +61,18 @@ async function loadProducts() {
 // ==========================================
 // Cart State
 // ==========================================
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
+function getCartKey() {
+  const user = getCurrentUser();
+  if (user && user.id) {
+    return `cart_${user.id}`;
+  }
+  return 'cart_guest';
+}
+
+let cart = JSON.parse(localStorage.getItem(getCartKey())) || [];
 
 function saveCart() {
-  localStorage.setItem('cart', JSON.stringify(cart));
+  localStorage.setItem(getCartKey(), JSON.stringify(cart));
   updateCartCount();
 }
 
